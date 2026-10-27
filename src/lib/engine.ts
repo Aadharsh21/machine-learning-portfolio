@@ -140,9 +140,7 @@ export interface FraudScores extends Scores {
   expected_loss_rule: { blocked: number; missed: number; review_cost: number; net_savings: number; alerts: number; tp: number; fp: number };
 }
 export interface FraudMeta {
-  features: string[]; // V1-V28 (anonymised), LogAmount, HourSin, HourCos
   splits: Record<"train" | "val" | "test", { rows: number; frauds: number; start_hour: number; end_hour: number }>;
-  best_iteration: number; // trees in the v2 model
   test_hours: number;
   test_fraud_amount: number;
   review_cost: number; // $5 per alert
@@ -169,101 +167,77 @@ export interface FraudLab {
   explain(index: number): Promise<FraudExplanation | null>; // v2's reasons; downloads the model on first use
 }
 // ---- insurance
+export interface Profile { age: number; male: 0 | 1; bmi: number; children: number; smoker: 0 | 1; region: number } // region indexes regions
 export type InsuranceGroup = "non_smoker" | "smoker_bmi_under_30" | "smoker_bmi_30_plus";
-export type InsuranceInput = "age" | "male" | "bmi" | "children" | "smoker" | "region";
-export interface Profile {
-  age: number; male: 0 | 1; bmi: number; children: number; smoker: 0 | 1;
-  region: number; // index into InsuranceCalculator.regions
+export interface InsuranceQuote {
+  profile: Profile;
+  group: InsuranceGroup;
+  charges: number; // the model's expected (average) yearly charges, pulled up by rare very large bills
+  range: { lo: number; median: number; hi: number }; // typical (median) charge, and where 8 in 10 similar customers land
+  base: number; // the average customer's charges: where the contributions start
+  contributions: { key: string; label: string; text: string; value: number }[]; // dollars, largest first; they add up to charges - base
 }
 export interface CvScore { mean: number; std: number }
 export interface InsuranceMeta {
   rows: number;
   mean_charges: number;
   group_means: Record<InsuranceGroup, number>;
-  models: Record<string, { label: string; cv: { r2: CvScore; mae: CvScore; rmse: CvScore } }>; // v1_age_only, linear_all, lightgbm, v2_linear_interactions; 5x5 repeated CV, dollars for mae and rmse
-  interval: { target: number; coverage: number; mean_width: number; repeats: number }; // how often the middle-80% range held the real charge on held-out customers
-  coefficients: Record<string, number>; // v2 model, dollars: age, age_squared, bmi, children, smoker, male, region_northwest, region_southeast, region_southwest, obese, smoker_obese, smoker_bmi
+  models: Record<string, { label: string; cv: { r2: CvScore; mae: CvScore; rmse: CvScore } }>; // v1_age_only, linear_all, lightgbm, v2_linear_interactions
+  interval: { target: number; coverage: number; mean_width: number; repeats: number };
+  coefficients: Record<string, number>; // dollars
   source: string;
-}
-export interface InsuranceCustomer { profile: Profile; charges: number; group: InsuranceGroup }
-export interface InsuranceContribution {
-  key: InsuranceInput;
-  label: string; // "Age", "Sex", "BMI", "Children", "Smoker", "Region"
-  text: string; // this profile's value written out: "yes", "31.0", "Southeast"
-  value: number; // dollars this input adds to (or takes off) the average customer's charges
-}
-export interface InsuranceQuote {
-  profile: Profile;
-  group: InsuranceGroup;
-  charges: number; // the model's expected yearly charges
-  range: { lo: number; median: number; hi: number }; // where 8 in 10 similar customers land, and the typical charge
-  base: number; // the average customer's predicted charges, where contributions start
-  contributions: InsuranceContribution[]; // largest first; they add up to charges - base
 }
 export interface InsuranceCalculator {
   meta: InsuranceMeta;
-  model: { predict(p: Profile): number; range(p: Profile): { lo: number; median: number; hi: number }; json: { obese_bmi: number } };
-  regions: string[]; // "northeast", "northwest", "southeast", "southwest"
-  customers: InsuranceCustomer[]; // all 1,338
-  groupLabels: Record<InsuranceGroup, string>; // "Non-smokers", "Smokers, BMI under 30", "Smokers, BMI 30 or more"
+  regions: string[]; // northeast, northwest, southeast, southwest
+  customers: { profile: Profile; charges: number; group: InsuranceGroup }[]; // all 1,338
+  groupLabels: Record<InsuranceGroup, string>;
   groupOf(p: Profile): InsuranceGroup;
-  quote(p: Profile): InsuranceQuote; // exact Shapley values over all 1,338 customers: a few ms
+  quote(p: Profile): InsuranceQuote;
   byAge(p: Profile, from?: number, to?: number): { age: number; charges: number; lo: number; median: number; hi: number }[];
 }
 // ---- clustering
-export interface IrisSweepPoint { k: number; inertia: number; silhouette: number | null; ari: number }
-export interface IrisMeta {
-  features: string[]; // sepal_length, sepal_width, petal_length, petal_width
-  species: string[]; // setosa, versicolor, virginica
-  sweep: { raw: IrisSweepPoint[]; scaled: IrisSweepPoint[] }; // k-means for k = 1..8 on cm and standardized measurements
-  gmm_bic: { k: number; bic: number }[]; // k = 1..6, lower is better
-  methods: Record<string, { label: string; ari: number; matrix: number[][]; matched_accuracy: number }>; // kmeans_raw, kmeans_scaled, ward_raw, gmm_raw; matrix is species (rows) by cluster
-  pca_explained_variance: number[];
-}
-/** "pca" for the first two principal components, or two measurement indices such as [2, 3]. */
-export type IrisView = "pca" | [number, number];
+export type IrisView = "pca" | [number, number]; // the PCA plane, or two measurement indices such as [2, 3]
 export interface IrisFrame {
   iteration: number;
   labels: number[]; // cluster of each flower
   centers: number[][]; // cm
-  covariances?: number[][][]; // mixture only, cm²
-  weights?: number[]; // mixture only
-  inertia?: number; // k-means only, in the space it clustered in
-  logLikelihood?: number; // mixture only, mean per flower
+  covariances?: number[][][]; // Gaussian mixture only
+  weights?: number[];
+  inertia?: number; // k-means only
+  logLikelihood?: number; // Gaussian mixture only
 }
 export interface IrisScore {
-  ari: number; // adjusted Rand index against the species: 1 is perfect, 0 is chance
-  accuracy: number; // share of flowers in their species' cluster under the best one-to-one matching
-  silhouette: number | null; // on the raw measurements; null when k = 1
-  counts: number[][]; // flowers per species (rows) and cluster (columns)
-  mapping: number[]; // cluster matched to each species, or -1
-}
-export interface IrisRunOptions {
-  method: "kmeans" | "gmm";
-  k: number;
-  seed?: number; // seeds the k-means++ starting points (default 0)
-  scaled?: boolean; // k-means only: cluster standardized measurements instead of cm
-  restarts?: number; // try seed, seed + 1, ... and keep the best (lowest inertia / highest likelihood)
-  maxIter?: number;
+  ari: number; // adjusted Rand index vs the species: 1 perfect, 0 chance
+  accuracy: number; // share of flowers in their species' cluster (best matching)
+  silhouette: number | null;
+  counts: number[][]; // species (rows) x cluster (columns)
+  mapping: number[]; // cluster matched to each species, -1 for none
 }
 export interface IrisRun {
   method: "kmeans" | "gmm"; k: number; seed: number; scaled: boolean; restarts: number;
-  frames: IrisFrame[]; // the starting state, then one per iteration (of the kept start)
+  frames: IrisFrame[]; // the start, then one per iteration
   converged: boolean;
   score: IrisScore;
   bestSeed: number;
-  tries: { seed: number; objective: number; ari: number }[];
+  tries: { seed: number; objective: number; ari: number }[]; // every start: inertia (k-means) or log-likelihood
+}
+export interface IrisMeta {
+  sweep: Record<"raw" | "scaled", { k: number; inertia: number; silhouette: number | null; ari: number }[]>; // k-means, k = 1..8
+  gmm_bic: { k: number; bic: number }[];
+  methods: Record<string, { label: string; ari: number; matrix: number[][]; matched_accuracy: number }>; // kmeans_raw, kmeans_scaled, ward_raw, gmm_raw
+  pca_explained_variance: number[];
 }
 export interface IrisPlayground {
   meta: IrisMeta;
-  features: string[];
-  species: string[];
-  X: number[][]; // 150 flowers, cm
+  features: string[]; // sepal_length, sepal_width, petal_length, petal_width (cm)
+  species: string[]; // setosa, versicolor, virginica
+  X: number[][]; // 150 x 4
   truth: number[]; // species index per flower
-  explained: number[]; // share of variance on the two principal components
+  explained: number[]; // variance share of PC1, PC2
   project(x: number[], view?: IrisView): [number, number];
   points(view?: IrisView): [number, number][];
-  ellipse(mean: number[], cov: number[][], view?: IrisView, radius?: number, segments?: number): [number, number][]; // `radius` standard deviations out
-  run(o: IrisRunOptions): IrisRun;
+  ellipse(mean: number[], cov: number[][], view?: IrisView, radius?: number): [number, number][]; // polygon
+  run(o: { method: "kmeans" | "gmm"; k: number; seed?: number; scaled?: boolean; restarts?: number }): IrisRun;
   score(labels: ArrayLike<number>, k: number): IrisScore;
 }
