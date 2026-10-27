@@ -9,6 +9,7 @@ import { ErrorPanel, LoadingPanel } from "@/components/site/Panels";
 import { useProject } from "@/hooks/useProject";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { useUrlState } from "@/hooks/useUrlState";
+import { usePageCredit } from "@/lib/credits";
 import { isIsoDay, isoDay } from "@/lib/dates";
 import type { RainEdits } from "@/lib/engine";
 import { pageTitle, projectInfo } from "@/lib/site";
@@ -128,6 +129,16 @@ function RainPage() {
     view.mode === "live" && live.status === "ready"
       ? (live.data.readings.get(station)?.forecastFields ?? [])
       : [];
+
+  usePageCredit(
+    rain
+      ? [
+          `Data: ${rain.meta.source}. Live readings: `,
+          { text: "Open-Meteo", href: "https://open-meteo.com" },
+          ".",
+        ]
+      : null,
+  );
 
   const openDay = (d: number) => {
     if (!rain) return;
