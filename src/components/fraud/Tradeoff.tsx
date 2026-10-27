@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Legend } from "@/components/site/Legend";
 import { useElementWidth } from "@/hooks/useElementWidth";
+import { kUsd, niceTicks } from "@/lib/axis";
 import type { Engine, FraudLab, FraudPolicy, ModelKey, TradeoffPoint } from "@/lib/engine";
 
 interface Props {
@@ -19,20 +20,6 @@ const STROKE: Record<ModelKey, { color: string; dash?: string }> = {
   v1: { color: "var(--ink-3)", dash: "6 4" },
   v2: { color: "var(--fraud)" },
 };
-
-/** "$5k", "−$10k", "$0" for axis ticks. */
-const kUsd = (v: number) =>
-  v === 0 ? "$0" : `${v < 0 ? "−" : ""}$${+(Math.abs(v) / 1000).toPrecision(3)}k`;
-
-/** Round tick steps (1, 2 or 5 x 10^n) covering [lo, hi]. */
-function niceTicks(lo: number, hi: number, count = 5): number[] {
-  const raw = (hi - lo) / count;
-  const mag = 10 ** Math.floor(Math.log10(raw));
-  const step = ([1, 2, 5, 10].find((m) => m * mag >= raw) ?? 10) * mag;
-  const out: number[] = [];
-  for (let v = Math.ceil(lo / step) * step; v <= hi + 1e-9; v += step) out.push(v);
-  return out;
-}
 
 const tooltip =
   "pointer-events-none absolute z-10 w-max max-w-[17rem] rounded-md border border-rule-strong bg-page px-3 py-2 text-sm text-ink shadow-sm";

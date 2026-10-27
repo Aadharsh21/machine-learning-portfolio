@@ -168,7 +168,47 @@ export interface FraudLab {
   canExplain(index: number): boolean;
   explain(index: number): Promise<FraudExplanation | null>; // v2's reasons; downloads the model on first use
 }
-// ---- insurance: replaced by the Insurance prompt
-export type InsuranceCalculator = any;
+// ---- insurance
+export type InsuranceGroup = "non_smoker" | "smoker_bmi_under_30" | "smoker_bmi_30_plus";
+export type InsuranceInput = "age" | "male" | "bmi" | "children" | "smoker" | "region";
+export interface Profile {
+  age: number; male: 0 | 1; bmi: number; children: number; smoker: 0 | 1;
+  region: number; // index into InsuranceCalculator.regions
+}
+export interface CvScore { mean: number; std: number }
+export interface InsuranceMeta {
+  rows: number;
+  mean_charges: number;
+  group_means: Record<InsuranceGroup, number>;
+  models: Record<string, { label: string; cv: { r2: CvScore; mae: CvScore; rmse: CvScore } }>; // v1_age_only, linear_all, lightgbm, v2_linear_interactions; 5x5 repeated CV, dollars for mae and rmse
+  interval: { target: number; coverage: number; mean_width: number; repeats: number }; // how often the middle-80% range held the real charge on held-out customers
+  coefficients: Record<string, number>; // v2 model, dollars: age, age_squared, bmi, children, smoker, male, region_northwest, region_southeast, region_southwest, obese, smoker_obese, smoker_bmi
+  source: string;
+}
+export interface InsuranceCustomer { profile: Profile; charges: number; group: InsuranceGroup }
+export interface InsuranceContribution {
+  key: InsuranceInput;
+  label: string; // "Age", "Sex", "BMI", "Children", "Smoker", "Region"
+  text: string; // this profile's value written out: "yes", "31.0", "Southeast"
+  value: number; // dollars this input adds to (or takes off) the average customer's charges
+}
+export interface InsuranceQuote {
+  profile: Profile;
+  group: InsuranceGroup;
+  charges: number; // the model's expected yearly charges
+  range: { lo: number; median: number; hi: number }; // where 8 in 10 similar customers land, and the typical charge
+  base: number; // the average customer's predicted charges, where contributions start
+  contributions: InsuranceContribution[]; // largest first; they add up to charges - base
+}
+export interface InsuranceCalculator {
+  meta: InsuranceMeta;
+  model: { predict(p: Profile): number; range(p: Profile): { lo: number; median: number; hi: number }; json: { obese_bmi: number } };
+  regions: string[]; // "northeast", "northwest", "southeast", "southwest"
+  customers: InsuranceCustomer[]; // all 1,338
+  groupLabels: Record<InsuranceGroup, string>; // "Non-smokers", "Smokers, BMI under 30", "Smokers, BMI 30 or more"
+  groupOf(p: Profile): InsuranceGroup;
+  quote(p: Profile): InsuranceQuote; // exact Shapley values over all 1,338 customers: a few ms
+  byAge(p: Profile, from?: number, to?: number): { age: number; charges: number; lo: number; median: number; hi: number }[];
+}
 // ---- clustering: replaced by the Clustering prompt
 export type IrisPlayground = any;
