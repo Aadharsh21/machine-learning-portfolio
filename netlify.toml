@@ -1,0 +1,8 @@
+# Netlify hosting. The Lovable build targets Cloudflare, so ask Nitro for Netlify's output here.
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NITRO_PRESET = "netlify"
+  NODE_VERSION = "22"
