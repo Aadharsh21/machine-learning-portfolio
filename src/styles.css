@@ -202,6 +202,52 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* A native range input styled with the tokens: used where a plain scrubber is enough. */
+@layer components {
+  .range-day {
+    -webkit-appearance: none;
+    appearance: none;
+    display: block;
+    width: 100%;
+    height: 24px;
+    background: transparent;
+    cursor: pointer;
+  }
+  .range-day::-webkit-slider-runnable-track {
+    height: 4px;
+    border-radius: 2px;
+    background: var(--rule-strong);
+  }
+  .range-day::-moz-range-track {
+    height: 4px;
+    border-radius: 2px;
+    background: var(--rule-strong);
+  }
+  .range-day::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    margin-top: -6px;
+    border-radius: 50%;
+    background: var(--ink);
+    border: 2px solid var(--page);
+    box-shadow: 0 0 0 1px var(--ink);
+  }
+  .range-day::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--ink);
+    border: 2px solid var(--page);
+    box-shadow: 0 0 0 1px var(--ink);
+  }
+  .range-day:focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+}
+
 @layer base {
   * {
     border-color: var(--color-border);

@@ -80,3 +80,10 @@ export const PROJECTS: ProjectInfo[] = [
 ];
 
 export const pageTitle = (t: string) => `${t} · Aadharsh Arunn`;
+
+/** A project's metadata by slug. */
+export function projectInfo(slug: ProjectSlug): ProjectInfo {
+  const p = PROJECTS.find((x) => x.slug === slug);
+  if (!p) throw new Error(`unknown project ${slug}`);
+  return p;
+}
