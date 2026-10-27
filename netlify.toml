@@ -1,0 +1,9 @@
+# Netlify builds the site with Nitro's Netlify preset: the static files go to dist/ and
+# server rendering runs as a single Netlify Function.
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+  NITRO_PRESET = "netlify"
