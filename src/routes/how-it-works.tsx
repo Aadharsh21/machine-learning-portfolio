@@ -25,7 +25,7 @@ export const Route = createFileRoute("/how-it-works")({
 /** 3.6e-12, 1e-9, or "exact" for 0 */
 function sci(v: number) {
   if (v === 0) return "exact";
-  const [m, e] = v.toExponential(1).split("e");
+  const [m = "", e = ""] = v.toExponential(1).split("e");
   return `${m.replace(/\.0$/, "")}e${e.replace("+", "")}`;
 }
 
