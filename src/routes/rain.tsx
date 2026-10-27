@@ -1,12 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Explorer, type LiveState, type RainMode } from "@/components/rain/Explorer";
+import { WhatIf } from "@/components/rain/WhatIf";
 import { PageIntro } from "@/components/site/PageIntro";
 import { ErrorPanel, LoadingPanel } from "@/components/site/Panels";
 import { useProject } from "@/hooks/useProject";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { useUrlState } from "@/hooks/useUrlState";
 import { isIsoDay, isoDay } from "@/lib/dates";
+import type { RainEdits } from "@/lib/engine";
 import { pageTitle, projectInfo } from "@/lib/site";
 import { useScheme } from "@/lib/theme";
 
@@ -16,6 +18,7 @@ const LEDE =
 const project = projectInfo("rain");
 const DEFAULT_STATION = "Sydney";
 const DEFAULT_DATE = "2016-07-08";
+const NO_EDITS: RainEdits = {};
 
 interface RainSearch {
   mode?: "live" | undefined;
@@ -78,6 +81,12 @@ function RainPage() {
     rain && rain.stations.some((s) => s.id === view.station) ? view.station : DEFAULT_STATION;
   const day = rain ? rain.dayOf(view.date) : 0;
 
+  // "what if" edits belong to one station, day and mode, so they reset when any changes
+  const editKey = `${view.mode}|${station}|${day}`;
+  const [editState, setEditState] = useState({ key: "", edits: NO_EDITS });
+  const edits = editState.key === editKey ? editState.edits : NO_EDITS;
+  const setEdits = (next: RainEdits) => setEditState({ key: editKey, edits: next });
+
   const loadLive = useCallback(() => {
     if (!rain) return;
     setLive({ status: "loading" });
@@ -108,9 +117,15 @@ function RainPage() {
 
   const forecast = useMemo(() => {
     if (!rain) return null;
-    if (view.mode === "live") return live.status === "ready" ? live.data.forecast(station) : null;
-    return rain.forecast(station, day);
-  }, [rain, view.mode, live, station, day]);
+    if (view.mode === "live")
+      return live.status === "ready" ? live.data.forecast(station, edits) : null;
+    return rain.forecast(station, day, edits);
+  }, [rain, view.mode, live, station, day, edits]);
+
+  const forecastFields =
+    view.mode === "live" && live.status === "ready"
+      ? (live.data.readings.get(station)?.forecastFields ?? [])
+      : [];
 
   const v2 = rain?.meta.models["v2_lightgbm"]?.test;
   const v1 = rain?.meta.models["v1_logistic"]?.test;
@@ -163,6 +178,16 @@ function RainPage() {
           onDay={(d) => setView((v) => ({ ...v, date: isoDay(rain.dateOf(d)) }))}
           onPlaying={setPlaying}
           onRetryLive={loadLive}
+        />
+      )}
+      {rain && engine && (
+        <WhatIf
+          engine={engine}
+          compass={rain.compass}
+          forecast={forecast}
+          edits={edits}
+          onEdits={setEdits}
+          forecastFields={forecastFields}
         />
       )}
     </main>

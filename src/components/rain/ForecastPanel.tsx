@@ -53,6 +53,15 @@ export function ForecastPanel({
             {engine.formatChance(f.probability)}
           </p>
           <p className="mt-2 text-sm text-ink-2">chance of rain (over 1 mm) by 9am the next day</p>
+          {f.edited && (
+            <p className="mt-3 rounded-md bg-surface px-3 py-2 text-sm text-ink">
+              With your changes. The recorded readings give{" "}
+              <span className="tabular font-semibold">
+                {engine.formatChance(f.recordedProbability)}
+              </span>
+              .
+            </p>
+          )}
           {!f.live && f.actual !== null && (
             <ul className="mt-4 flex flex-wrap gap-2">
               <li className={`${chip} text-ink`}>
