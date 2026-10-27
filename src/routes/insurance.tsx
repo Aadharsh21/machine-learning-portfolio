@@ -9,7 +9,7 @@ import { useProject } from "@/hooks/useProject";
 import { useUrlState } from "@/hooks/useUrlState";
 import { usePageCredit } from "@/lib/credits";
 import type { Profile } from "@/lib/engine";
-import { pageTitle, projectInfo } from "@/lib/site";
+import { pageHead, projectInfo } from "@/lib/site";
 
 const LEDE =
   "Estimates a customer's yearly medical charges from six facts: age, sex, BMI, children, smoking and region, learned from 1,338 US customers. Describe someone and see the typical bill, the range most people like them fall in, and exactly how each fact moves it.";
@@ -73,14 +73,7 @@ export const Route = createFileRoute("/insurance")({
       region: REGIONS.includes(region as Region) ? (region as Region) : undefined,
     };
   },
-  head: () => ({
-    meta: [
-      { title: pageTitle(project.title) },
-      { name: "description", content: LEDE },
-      { property: "og:title", content: pageTitle(project.title) },
-      { property: "og:description", content: LEDE },
-    ],
-  }),
+  head: () => pageHead({ title: project.title, description: LEDE, path: "/insurance" }),
   component: InsurancePage,
 });
 

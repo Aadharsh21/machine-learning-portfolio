@@ -12,7 +12,7 @@ import { useUrlState } from "@/hooks/useUrlState";
 import { usePageCredit } from "@/lib/credits";
 import { isIsoDay, isoDay } from "@/lib/dates";
 import type { RainEdits } from "@/lib/engine";
-import { pageTitle, projectInfo } from "@/lib/site";
+import { pageHead, projectInfo } from "@/lib/site";
 import { useScheme } from "@/lib/theme";
 
 const LEDE =
@@ -53,14 +53,7 @@ export const Route = createFileRoute("/rain")({
       date: isIsoDay(date) ? date : undefined,
     };
   },
-  head: () => ({
-    meta: [
-      { title: pageTitle(project.title) },
-      { name: "description", content: LEDE },
-      { property: "og:title", content: pageTitle(project.title) },
-      { property: "og:description", content: LEDE },
-    ],
-  }),
+  head: () => pageHead({ title: project.title, description: LEDE, path: "/rain" }),
   component: RainPage,
 });
 

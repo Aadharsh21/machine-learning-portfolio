@@ -5,20 +5,13 @@ import { DataTable } from "@/components/site/DataTable";
 import { PageIntro } from "@/components/site/PageIntro";
 import { ErrorPanel, LoadingPanel } from "@/components/site/Panels";
 import { ENGINE_URL, REPO_URL, loadEngine, type Engine, type ParityCheck } from "@/lib/engine";
-import { pageTitle } from "@/lib/site";
+import { pageHead } from "@/lib/site";
 
 const LEDE =
   "Every model on this site was trained in Python and exported as plain JSON. A small TypeScript engine with no dependencies runs them in your browser and reproduces the Python results.";
 
 export const Route = createFileRoute("/how-it-works")({
-  head: () => ({
-    meta: [
-      { title: pageTitle("How it works") },
-      { name: "description", content: LEDE },
-      { property: "og:title", content: pageTitle("How it works") },
-      { property: "og:description", content: LEDE },
-    ],
-  }),
+  head: () => pageHead({ title: "How it works", description: LEDE, path: "/how-it-works" }),
   component: HowItWorks,
 });
 

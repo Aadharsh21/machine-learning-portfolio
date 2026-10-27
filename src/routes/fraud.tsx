@@ -13,7 +13,7 @@ import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { useUrlState } from "@/hooks/useUrlState";
 import { usePageCredit } from "@/lib/credits";
 import type { FraudLab, FraudPolicy, ModelKey } from "@/lib/engine";
-import { pageTitle, projectInfo } from "@/lib/site";
+import { pageHead, projectInfo } from "@/lib/site";
 import { useScheme } from "@/lib/theme";
 
 const LEDE =
@@ -74,14 +74,7 @@ export const Route = createFileRoute("/fraud")({
       cost: cost >= 1 && cost <= 50 ? Math.round(cost) : undefined,
     };
   },
-  head: () => ({
-    meta: [
-      { title: pageTitle(project.title) },
-      { name: "description", content: LEDE },
-      { property: "og:title", content: pageTitle(project.title) },
-      { property: "og:description", content: LEDE },
-    ],
-  }),
+  head: () => pageHead({ title: project.title, description: LEDE, path: "/fraud" }),
   component: FraudPage,
 });
 

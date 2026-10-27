@@ -14,6 +14,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
+import { OG_IMAGE, SITE_NAME } from "@/lib/site";
 import { themeBootScript } from "@/lib/theme";
 
 function NotFoundComponent() {
@@ -83,7 +84,19 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content: "Machine learning projects by Aadharsh Arunn, running live in your browser.",
       },
       { property: "og:type", content: "website" },
+      { property: "og:site_name", content: SITE_NAME },
+      { property: "og:image", content: OG_IMAGE },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      {
+        property: "og:image:alt",
+        content:
+          "Machine learning projects by Aadharsh Arunn, with four coloured dots for the four projects",
+      },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:image", content: OG_IMAGE },
+      { name: "theme-color", content: "#ffffff", media: "(prefers-color-scheme: light)" },
+      { name: "theme-color", content: "#0c1421", media: "(prefers-color-scheme: dark)" },
     ],
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -93,7 +106,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: "https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&display=swap",
       },
       { rel: "stylesheet", href: appCss },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
+      { rel: "icon", href: "/favicon.ico", sizes: "32x32" },
+      { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
     ],
     scripts: [{ children: themeBootScript }],
   }),

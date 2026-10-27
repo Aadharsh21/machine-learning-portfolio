@@ -9,7 +9,7 @@ import { useProject } from "@/hooks/useProject";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { useUrlState } from "@/hooks/useUrlState";
 import { usePageCredit } from "@/lib/credits";
-import { pageTitle, projectInfo } from "@/lib/site";
+import { pageHead, projectInfo } from "@/lib/site";
 
 const LEDE =
   "Can an algorithm that never sees the labels recover the three iris species from four flower measurements? Run k-means or a Gaussian mixture one step at a time and see where it lands.";
@@ -67,14 +67,7 @@ export const Route = createFileRoute("/clustering")({
       view: typeof view === "string" && view in VIEWS ? (view as ViewKey) : undefined,
     };
   },
-  head: () => ({
-    meta: [
-      { title: pageTitle(project.title) },
-      { name: "description", content: LEDE },
-      { property: "og:title", content: pageTitle(project.title) },
-      { property: "og:description", content: LEDE },
-    ],
-  }),
+  head: () => pageHead({ title: project.title, description: LEDE, path: "/clustering" }),
   component: ClusteringPage,
 });
 

@@ -89,6 +89,29 @@ export const PROJECTS: ProjectInfo[] = [
 
 export const pageTitle = (t: string) => `${t} · Aadharsh Arunn`;
 
+/** The published site, for canonical links and social cards. */
+export const SITE_URL = "https://aadharsh-ml-projects.netlify.app";
+export const SITE_NAME = "Aadharsh Arunn: Machine learning projects";
+export const OG_IMAGE = `${SITE_URL}/og.png`;
+
+/** Title, description, canonical URL and social tags for one page. */
+export function pageHead(page: { title: string; description: string; path: string }) {
+  const title = pageTitle(page.title);
+  const url = `${SITE_URL}${page.path}`;
+  return {
+    meta: [
+      { title },
+      { name: "description", content: page.description },
+      { property: "og:title", content: title },
+      { property: "og:description", content: page.description },
+      { property: "og:url", content: url },
+      { name: "twitter:title", content: title },
+      { name: "twitter:description", content: page.description },
+    ],
+    links: [{ rel: "canonical", href: url }],
+  };
+}
+
 /** A project's metadata by slug. */
 export function projectInfo(slug: ProjectSlug): ProjectInfo {
   const p = PROJECTS.find((x) => x.slug === slug);

@@ -3,20 +3,13 @@ import { ArrowDown, ArrowRight, ShieldCheck } from "lucide-react";
 import { Fragment } from "react";
 import { ACCENT_BORDER } from "@/components/site/accent";
 import { PageIntro } from "@/components/site/PageIntro";
-import { PROJECTS, pageTitle } from "@/lib/site";
+import { PROJECTS, pageHead } from "@/lib/site";
 
 const LEDE =
   "Four projects I rebuilt from my first notebooks into properly evaluated models. Each one was trained in Python, graded the way it would really be used, and runs live in your browser with no server.";
 
 export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: pageTitle("Machine learning projects") },
-      { name: "description", content: LEDE },
-      { property: "og:title", content: pageTitle("Machine learning projects") },
-      { property: "og:description", content: LEDE },
-    ],
-  }),
+  head: () => pageHead({ title: "Machine learning projects", description: LEDE, path: "/" }),
   component: Home,
 });
 
