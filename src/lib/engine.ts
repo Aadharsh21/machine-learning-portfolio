@@ -140,7 +140,9 @@ export interface FraudScores extends Scores {
   expected_loss_rule: { blocked: number; missed: number; review_cost: number; net_savings: number; alerts: number; tp: number; fp: number };
 }
 export interface FraudMeta {
+  features: string[]; // V1-V28 (anonymised), LogAmount, HourSin, HourCos
   splits: Record<"train" | "val" | "test", { rows: number; frauds: number; start_hour: number; end_hour: number }>;
+  best_iteration: number; // trees in the v2 model
   test_hours: number;
   test_fraud_amount: number;
   review_cost: number; // $5 per alert

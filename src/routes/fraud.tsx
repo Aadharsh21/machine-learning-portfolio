@@ -1,12 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
+import { Explanation } from "@/components/fraud/Explanation";
+import { FraudResults } from "@/components/fraud/FraudResults";
 import { Radar, type FraudRule } from "@/components/fraud/Radar";
 import { ReportCards } from "@/components/fraud/ReportCards";
+import { Tradeoff } from "@/components/fraud/Tradeoff";
 import { PageIntro } from "@/components/site/PageIntro";
 import { ErrorPanel, LoadingPanel } from "@/components/site/Panels";
 import { useProject } from "@/hooks/useProject";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { useUrlState } from "@/hooks/useUrlState";
+import { usePageCredit } from "@/lib/credits";
 import type { FraudPolicy, ModelKey } from "@/lib/engine";
 import { pageTitle, projectInfo } from "@/lib/site";
 import { useScheme } from "@/lib/theme";
@@ -87,6 +91,26 @@ function FraudPage() {
     () => ({ model: view.model, rule: view.rule, threshold: view.t, reviewCost: view.cost }),
     [view.model, view.rule, view.t, view.cost],
   );
+  const flags = useMemo(() => (lab ? lab.flags(policy) : null), [lab, policy]);
+
+  // until a payment is picked, explain the latest fraud v2 caught
+  const latestCaught = useMemo(() => {
+    if (!lab) return null;
+    for (let i = lab.count - 1; i >= 0; i--)
+      if (lab.stream.isFraud[i] && (lab.probability.v2[i] ?? 0) >= 0.5) return i;
+    return null;
+  }, [lab]);
+  const shown = selected ?? latestCaught;
+
+  usePageCredit(
+    lab
+      ? [
+          `Data: ${lab.meta.source}, via `,
+          { text: "Kaggle", href: "https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud" },
+          ".",
+        ]
+      : null,
+  );
 
   const v2 = lab?.meta.models["v2_lightgbm"]?.test;
   const v1 = lab?.meta.models["v1_undersampled_logistic"]?.test;
@@ -139,10 +163,29 @@ function FraudPage() {
             onRule={(rule) => setView((v) => ({ ...v, rule }))}
             onThreshold={(t) => setView((v) => ({ ...v, t }))}
             onReviewCost={(cost) => setView((v) => ({ ...v, cost }))}
-            selected={selected}
+            selected={shown}
             onSelect={setSelected}
             reducedMotion={reducedMotion}
+            aside={
+              shown !== null &&
+              flags && (
+                <Explanation
+                  lab={lab}
+                  engine={engine}
+                  policy={policy}
+                  flags={flags}
+                  index={shown}
+                />
+              )
+            }
           />
+          <Tradeoff
+            lab={lab}
+            engine={engine}
+            policy={policy}
+            onThreshold={(t) => setView((v) => ({ ...v, rule: "threshold", t }))}
+          />
+          <FraudResults meta={lab.meta} engine={engine} />
         </>
       )}
     </main>
