@@ -4,12 +4,63 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/*
+ * Metric-matched fallbacks: while Archivo and Newsreader download, text is set in Arial or
+ * Times scaled to the same widths, so lines wrap the same way and nothing jumps when the
+ * web fonts arrive. Sizes were measured against the fonts' own text widths; the overrides
+ * keep each font's ascent and descent.
+ */
+@font-face {
+  font-family: "Archivo Fallback";
+  src:
+    local("Arial"), local("ArialMT"), local("Helvetica"), local("Liberation Sans"),
+    local("LiberationSans");
+  font-weight: 100 500;
+  size-adjust: 98.5%;
+  ascent-override: 89.1%;
+  descent-override: 21.3%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Archivo Fallback";
+  src:
+    local("Arial Bold"), local("Arial-BoldMT"), local("Helvetica Bold"),
+    local("Liberation Sans Bold"), local("LiberationSans-Bold");
+  font-weight: 600 900;
+  size-adjust: 95.1%;
+  ascent-override: 92.3%;
+  descent-override: 22.1%;
+  line-gap-override: 0%;
+}
+/* condensed headings and readouts (Archivo at 75% width, semibold) */
+@font-face {
+  font-family: "Archivo Condensed Fallback";
+  src:
+    local("Arial Bold"), local("Arial-BoldMT"), local("Helvetica Bold"),
+    local("Liberation Sans Bold"), local("LiberationSans-Bold");
+  font-weight: 100 900;
+  size-adjust: 76.7%;
+  ascent-override: 114.5%;
+  descent-override: 27.4%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: "Newsreader Fallback";
+  src:
+    local("Times New Roman"), local("TimesNewRomanPSMT"), local("Times"), local("Liberation Serif"),
+    local("LiberationSerif");
+  size-adjust: 110.7%;
+  ascent-override: 66.4%;
+  descent-override: 23.9%;
+  line-gap-override: 0%;
+}
+
 /* Design system: ink on paper. All colours are tokens; see :root / .dark. */
 
 @theme inline {
-  --font-sans: "Archivo", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Archivo", ui-sans-serif, system-ui, sans-serif;
-  --font-serif: "Newsreader", ui-serif, Georgia, serif;
+  --font-sans: "Archivo", "Archivo Fallback", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Archivo", "Archivo Condensed Fallback", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Newsreader", "Newsreader Fallback", ui-serif, Georgia, serif;
 
   --radius-sm: 6px;
   --radius-md: 6px;
