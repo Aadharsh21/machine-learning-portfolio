@@ -210,5 +210,60 @@ export interface InsuranceCalculator {
   quote(p: Profile): InsuranceQuote; // exact Shapley values over all 1,338 customers: a few ms
   byAge(p: Profile, from?: number, to?: number): { age: number; charges: number; lo: number; median: number; hi: number }[];
 }
-// ---- clustering: replaced by the Clustering prompt
-export type IrisPlayground = any;
+// ---- clustering
+export interface IrisSweepPoint { k: number; inertia: number; silhouette: number | null; ari: number }
+export interface IrisMeta {
+  features: string[]; // sepal_length, sepal_width, petal_length, petal_width
+  species: string[]; // setosa, versicolor, virginica
+  sweep: { raw: IrisSweepPoint[]; scaled: IrisSweepPoint[] }; // k-means for k = 1..8 on cm and standardized measurements
+  gmm_bic: { k: number; bic: number }[]; // k = 1..6, lower is better
+  methods: Record<string, { label: string; ari: number; matrix: number[][]; matched_accuracy: number }>; // kmeans_raw, kmeans_scaled, ward_raw, gmm_raw; matrix is species (rows) by cluster
+  pca_explained_variance: number[];
+}
+/** "pca" for the first two principal components, or two measurement indices such as [2, 3]. */
+export type IrisView = "pca" | [number, number];
+export interface IrisFrame {
+  iteration: number;
+  labels: number[]; // cluster of each flower
+  centers: number[][]; // cm
+  covariances?: number[][][]; // mixture only, cm²
+  weights?: number[]; // mixture only
+  inertia?: number; // k-means only, in the space it clustered in
+  logLikelihood?: number; // mixture only, mean per flower
+}
+export interface IrisScore {
+  ari: number; // adjusted Rand index against the species: 1 is perfect, 0 is chance
+  accuracy: number; // share of flowers in their species' cluster under the best one-to-one matching
+  silhouette: number | null; // on the raw measurements; null when k = 1
+  counts: number[][]; // flowers per species (rows) and cluster (columns)
+  mapping: number[]; // cluster matched to each species, or -1
+}
+export interface IrisRunOptions {
+  method: "kmeans" | "gmm";
+  k: number;
+  seed?: number; // seeds the k-means++ starting points (default 0)
+  scaled?: boolean; // k-means only: cluster standardized measurements instead of cm
+  restarts?: number; // try seed, seed + 1, ... and keep the best (lowest inertia / highest likelihood)
+  maxIter?: number;
+}
+export interface IrisRun {
+  method: "kmeans" | "gmm"; k: number; seed: number; scaled: boolean; restarts: number;
+  frames: IrisFrame[]; // the starting state, then one per iteration (of the kept start)
+  converged: boolean;
+  score: IrisScore;
+  bestSeed: number;
+  tries: { seed: number; objective: number; ari: number }[];
+}
+export interface IrisPlayground {
+  meta: IrisMeta;
+  features: string[];
+  species: string[];
+  X: number[][]; // 150 flowers, cm
+  truth: number[]; // species index per flower
+  explained: number[]; // share of variance on the two principal components
+  project(x: number[], view?: IrisView): [number, number];
+  points(view?: IrisView): [number, number][];
+  ellipse(mean: number[], cov: number[][], view?: IrisView, radius?: number, segments?: number): [number, number][]; // `radius` standard deviations out
+  run(o: IrisRunOptions): IrisRun;
+  score(labels: ArrayLike<number>, k: number): IrisScore;
+}
