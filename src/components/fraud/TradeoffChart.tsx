@@ -43,6 +43,10 @@ export function TradeoffChart({ lab, engine, policy, onThreshold }: Props) {
   const best = t.best;
   const bx = x(best.threshold);
   const by = y(best.net);
+  // the expected-loss label goes on whichever side leaves more room around the best point
+  const elrText = `Expected-loss rule: ${engine.formatSignedUsd(elr)}`;
+  const elrWidth = elrText.length * 6;
+  const labelRight = M.left + pw - 6 - elrWidth - bx > bx - (M.left + 6 + elrWidth);
   const bestText = `Best: alert above ${engine.formatChance(best.threshold)} → ${engine.formatSignedUsd(
     best.net,
   )} with ${engine.formatInt(best.alerts)} alerts`;
@@ -150,17 +154,6 @@ export function TradeoffChart({ lab, engine, policy, onThreshold }: Props) {
               strokeWidth={1.5}
               strokeDasharray="6 4"
             />
-            <text
-              x={M.left + 6}
-              y={y(elr) - 6}
-              fontSize={12}
-              fill="var(--ink-2)"
-              stroke="var(--page)"
-              strokeWidth={3}
-              paintOrder="stroke"
-            >
-              Expected-loss rule: {engine.formatSignedUsd(elr)}
-            </text>
 
             <path
               d={path}
@@ -180,6 +173,19 @@ export function TradeoffChart({ lab, engine, policy, onThreshold }: Props) {
               />
             )}
             <line x1={bx} x2={bx} y1={M.top - 8} y2={by - 6} stroke="var(--ink-3)" />
+            {/* drawn over the cut-off and leader lines; its halo keeps it readable where they cross */}
+            <text
+              x={labelRight ? M.left + pw - 6 : M.left + 6}
+              y={y(elr) - 8}
+              textAnchor={labelRight ? "end" : "start"}
+              fontSize={12}
+              fill="var(--ink-2)"
+              stroke="var(--page)"
+              strokeWidth={4}
+              paintOrder="stroke"
+            >
+              {elrText}
+            </text>
             <circle
               cx={bx}
               cy={by}
