@@ -12,26 +12,22 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { Header } from "@/components/site/Header";
+import { Footer } from "@/components/site/Footer";
+import { themeBootScript } from "@/lib/theme";
 
 function NotFoundComponent() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="max-w-md text-center">
-        <h1 className="text-7xl font-bold text-foreground">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          The page you're looking for doesn't exist or has been moved.
-        </p>
-        <div className="mt-6">
-          <Link
-            to="/"
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-          >
-            Go home
-          </Link>
-        </div>
-      </div>
-    </div>
+    <main className="page-wrap py-24">
+      <p className="tabular text-sm text-ink-3">404</p>
+      <h1 className="mt-2 font-condensed text-5xl text-ink">This page isn't here</h1>
+      <p className="mt-4 max-w-xl font-serif text-xl text-ink-2">
+        The link may be old or mistyped. The four projects are all on the home page.
+      </p>
+      <Link to="/" className="mt-8 inline-flex rounded-sm bg-ink px-4 py-2 text-sm font-semibold text-page hover:opacity-90">
+        Go to the home page
+      </Link>
+    </main>
   );
 }
 
@@ -43,33 +39,24 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
   }, [error]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          This page didn't load
-        </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Something went wrong on our end. You can try refreshing or head back home.
-        </p>
-        <div className="mt-6 flex flex-wrap justify-center gap-2">
-          <button
-            onClick={() => {
-              router.invalidate();
-              reset();
-            }}
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-          >
-            Try again
-          </button>
-          <a
-            href="/"
-            className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
-          >
-            Go home
-          </a>
-        </div>
+    <main className="page-wrap py-24">
+      <h1 className="font-condensed text-4xl text-ink">This page didn't load</h1>
+      <p className="mt-2 text-ink-2">Something went wrong. You can try again or head back home.</p>
+      <div className="mt-6 flex flex-wrap gap-2">
+        <button
+          onClick={() => {
+            router.invalidate();
+            reset();
+          }}
+          className="rounded-sm bg-ink px-4 py-2 text-sm font-semibold text-page"
+        >
+          Try again
+        </button>
+        <a href="/" className="rounded-sm border border-rule-strong px-4 py-2 text-sm font-semibold text-ink">
+          Go home
+        </a>
       </div>
-    </div>
+    </main>
   );
 }
 
@@ -78,21 +65,25 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Aadharsh Arunn: Machine learning projects" },
-      { name: "description", content: "Machine learning projects by Aadharsh Arunn." },
+      { title: "Machine learning projects · Aadharsh Arunn" },
+      { name: "description", content: "Machine learning projects by Aadharsh Arunn, running live in your browser." },
       { name: "author", content: "Aadharsh Arunn" },
-      { property: "og:title", content: "Aadharsh Arunn: Machine learning projects" },
-      { property: "og:description", content: "Machine learning projects by Aadharsh Arunn." },
+      { property: "og:title", content: "Machine learning projects · Aadharsh Arunn" },
+      { property: "og:description", content: "Machine learning projects by Aadharsh Arunn, running live in your browser." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: appCss,
+        href: "https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&display=swap",
       },
+      { rel: "stylesheet", href: appCss },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
     ],
+    scripts: [{ children: themeBootScript }],
   }),
   shellComponent: RootShell,
   component: RootComponent,
@@ -102,7 +93,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>
@@ -119,8 +110,16 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:bg-page focus:px-3 focus:py-2">
+        Skip to content
+      </a>
+      <div className="flex min-h-screen flex-col">
+        <Header />
+        <div id="main" className="flex-1">
+          <Outlet />
+        </div>
+        <Footer />
+      </div>
     </QueryClientProvider>
   );
 }
