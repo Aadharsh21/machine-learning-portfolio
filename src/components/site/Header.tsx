@@ -2,6 +2,7 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { Github, Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { REPO_URL } from "@/lib/engine";
+import { warmEngine } from "@/lib/warm";
 import { PROJECTS } from "@/lib/site";
 import { ACCENT_BG } from "./accent";
 import { ThemeToggle } from "./ThemeToggle";
@@ -13,12 +14,27 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   return (
     <>
       {PROJECTS.map((p) => (
-        <Link key={p.slug} to={p.path} className={linkCls} onClick={onNavigate}>
+        <Link
+          key={p.slug}
+          to={p.path}
+          className={linkCls}
+          onClick={onNavigate}
+          onMouseEnter={warmEngine}
+          onFocus={warmEngine}
+          onTouchStart={warmEngine}
+        >
           <span className={`h-2 w-2 rounded-full ${ACCENT_BG[p.accent]}`} aria-hidden />
           {p.nav}
         </Link>
       ))}
-      <Link to="/how-it-works" className={linkCls} onClick={onNavigate}>
+      <Link
+        to="/how-it-works"
+        className={linkCls}
+        onClick={onNavigate}
+        onMouseEnter={warmEngine}
+        onFocus={warmEngine}
+        onTouchStart={warmEngine}
+      >
         How it works
       </Link>
       <a href={REPO_URL} className={linkCls} target="_blank" rel="noreferrer">

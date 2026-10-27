@@ -4,6 +4,7 @@ import { Fragment } from "react";
 import { ACCENT_BORDER } from "@/components/site/accent";
 import { PageIntro } from "@/components/site/PageIntro";
 import { PROJECTS, pageHead } from "@/lib/site";
+import { warmEngine } from "@/lib/warm";
 
 const LEDE =
   "Four projects I rebuilt from my first notebooks into properly evaluated models. Each one was trained in Python, graded the way it would really be used, and runs live in your browser with no server.";
@@ -35,6 +36,9 @@ function Home() {
             <li
               key={p.slug}
               className={`flex flex-col rounded-lg border border-rule border-t-2 ${ACCENT_BORDER[p.accent]} bg-page p-6`}
+              onMouseEnter={warmEngine}
+              onFocus={warmEngine}
+              onTouchStart={warmEngine}
             >
               <h3 className="font-condensed text-3xl text-ink">{p.title}</h3>
               <p className="mt-2 font-serif text-lg text-ink-2">{p.question}</p>
