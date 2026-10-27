@@ -10,33 +10,91 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ClusteringRouteImport } from './routes/clustering'
+import { Route as FraudRouteImport } from './routes/fraud'
+import { Route as HowItWorksRouteImport } from './routes/how-it-works'
+import { Route as InsuranceRouteImport } from './routes/insurance'
+import { Route as RainRouteImport } from './routes/rain'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ClusteringRoute = ClusteringRouteImport.update({
+  id: '/clustering',
+  path: '/clustering',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FraudRoute = FraudRouteImport.update({
+  id: '/fraud',
+  path: '/fraud',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HowItWorksRoute = HowItWorksRouteImport.update({
+  id: '/how-it-works',
+  path: '/how-it-works',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InsuranceRoute = InsuranceRouteImport.update({
+  id: '/insurance',
+  path: '/insurance',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RainRoute = RainRouteImport.update({
+  id: '/rain',
+  path: '/rain',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/clustering': typeof ClusteringRoute
+  '/fraud': typeof FraudRoute
+  '/how-it-works': typeof HowItWorksRoute
+  '/insurance': typeof InsuranceRoute
+  '/rain': typeof RainRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/clustering': typeof ClusteringRoute
+  '/fraud': typeof FraudRoute
+  '/how-it-works': typeof HowItWorksRoute
+  '/insurance': typeof InsuranceRoute
+  '/rain': typeof RainRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/clustering': typeof ClusteringRoute
+  '/fraud': typeof FraudRoute
+  '/how-it-works': typeof HowItWorksRoute
+  '/insurance': typeof InsuranceRoute
+  '/rain': typeof RainRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    '/' | '/clustering' | '/fraud' | '/how-it-works' | '/insurance' | '/rain'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/clustering' | '/fraud' | '/how-it-works' | '/insurance' | '/rain'
+  id:
+    | '__root__'
+    | '/'
+    | '/clustering'
+    | '/fraud'
+    | '/how-it-works'
+    | '/insurance'
+    | '/rain'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ClusteringRoute: typeof ClusteringRoute
+  FraudRoute: typeof FraudRoute
+  HowItWorksRoute: typeof HowItWorksRoute
+  InsuranceRoute: typeof InsuranceRoute
+  RainRoute: typeof RainRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +106,51 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/clustering': {
+      id: '/clustering'
+      path: '/clustering'
+      fullPath: '/clustering'
+      preLoaderRoute: typeof ClusteringRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/fraud': {
+      id: '/fraud'
+      path: '/fraud'
+      fullPath: '/fraud'
+      preLoaderRoute: typeof FraudRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/how-it-works': {
+      id: '/how-it-works'
+      path: '/how-it-works'
+      fullPath: '/how-it-works'
+      preLoaderRoute: typeof HowItWorksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/insurance': {
+      id: '/insurance'
+      path: '/insurance'
+      fullPath: '/insurance'
+      preLoaderRoute: typeof InsuranceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/rain': {
+      id: '/rain'
+      path: '/rain'
+      fullPath: '/rain'
+      preLoaderRoute: typeof RainRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ClusteringRoute: ClusteringRoute,
+  FraudRoute: FraudRoute,
+  HowItWorksRoute: HowItWorksRoute,
+  InsuranceRoute: InsuranceRoute,
+  RainRoute: RainRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
