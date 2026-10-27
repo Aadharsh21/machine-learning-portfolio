@@ -1,17 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Explanation } from "@/components/fraud/Explanation";
 import { FraudResults } from "@/components/fraud/FraudResults";
+import { PrChart } from "@/components/fraud/PrChart";
 import { Radar, type FraudRule } from "@/components/fraud/Radar";
 import { ReportCards } from "@/components/fraud/ReportCards";
-import { Tradeoff } from "@/components/fraud/Tradeoff";
+import { TradeoffChart } from "@/components/fraud/TradeoffChart";
+import { WhyFlagged } from "@/components/fraud/WhyFlagged";
 import { PageIntro } from "@/components/site/PageIntro";
 import { ErrorPanel, LoadingPanel } from "@/components/site/Panels";
 import { useProject } from "@/hooks/useProject";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { useUrlState } from "@/hooks/useUrlState";
 import { usePageCredit } from "@/lib/credits";
-import type { FraudPolicy, ModelKey } from "@/lib/engine";
+import type { FraudLab, FraudPolicy, ModelKey } from "@/lib/engine";
 import { pageTitle, projectInfo } from "@/lib/site";
 import { useScheme } from "@/lib/theme";
 
@@ -33,6 +34,18 @@ interface FraudView {
   t: number;
   /** dollars to review one alert */
   cost: number;
+}
+
+/** The most recent fraud the current rule catches, else the most recent fraud. */
+function latestCatch(lab: FraudLab, policy: FraudPolicy): number | null {
+  const flags = lab.flags(policy);
+  let fraud: number | null = null;
+  for (let i = lab.count - 1; i >= 0; i--) {
+    if (!lab.stream.isFraud[i]) continue;
+    if (flags[i]) return i;
+    fraud ??= i;
+  }
+  return fraud;
 }
 
 const num = (v: unknown) => (typeof v === "number" ? v : typeof v === "string" ? Number(v) : NaN);
@@ -91,26 +104,11 @@ function FraudPage() {
     () => ({ model: view.model, rule: view.rule, threshold: view.t, reviewCost: view.cost }),
     [view.model, view.rule, view.t, view.cost],
   );
-  const flags = useMemo(() => (lab ? lab.flags(policy) : null), [lab, policy]);
+  // until a payment is picked, explain the latest fraud the current rule catches
+  const fallback = useMemo(() => (lab ? latestCatch(lab, policy) : null), [lab, policy]);
+  const shown = selected ?? fallback;
 
-  // until a payment is picked, explain the latest fraud v2 caught
-  const latestCaught = useMemo(() => {
-    if (!lab) return null;
-    for (let i = lab.count - 1; i >= 0; i--)
-      if (lab.stream.isFraud[i] && (lab.probability.v2[i] ?? 0) >= 0.5) return i;
-    return null;
-  }, [lab]);
-  const shown = selected ?? latestCaught;
-
-  usePageCredit(
-    lab
-      ? [
-          `Data: ${lab.meta.source}, via `,
-          { text: "Kaggle", href: "https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud" },
-          ".",
-        ]
-      : null,
-  );
+  usePageCredit(lab ? [`Data: ${lab.meta.source}.`] : null);
 
   const v2 = lab?.meta.models["v2_lightgbm"]?.test;
   const v1 = lab?.meta.models["v1_undersampled_logistic"]?.test;
@@ -166,25 +164,28 @@ function FraudPage() {
             selected={shown}
             onSelect={setSelected}
             reducedMotion={reducedMotion}
-            aside={
-              shown !== null &&
-              flags && (
-                <Explanation
-                  lab={lab}
-                  engine={engine}
-                  policy={policy}
-                  flags={flags}
-                  index={shown}
-                />
-              )
-            }
+            aside={<WhyFlagged lab={lab} engine={engine} policy={policy} index={shown} />}
           />
-          <Tradeoff
-            lab={lab}
-            engine={engine}
-            policy={policy}
-            onThreshold={(t) => setView((v) => ({ ...v, rule: "threshold", t }))}
-          />
+          <section aria-labelledby="tradeoff-h" className="mt-16 border-t border-rule pt-10">
+            <h2 id="tradeoff-h" className="font-condensed text-3xl text-ink">
+              Pick the trade-off
+            </h2>
+            <div className="mt-6 grid grid-cols-1 gap-10 lg:grid-cols-2">
+              <TradeoffChart
+                lab={lab}
+                engine={engine}
+                policy={policy}
+                onThreshold={(t) => {
+                  setView((v) => ({ ...v, rule: "threshold", t }));
+                  document.getElementById("radar")?.scrollIntoView({
+                    behavior: reducedMotion ? "auto" : "smooth",
+                    block: "start",
+                  });
+                }}
+              />
+              <PrChart lab={lab} engine={engine} policy={policy} />
+            </div>
+          </section>
           <FraudResults meta={lab.meta} engine={engine} />
         </>
       )}

@@ -4,7 +4,8 @@ import { RangeSlider } from "@/components/site/RangeSlider";
 import { Segmented } from "@/components/site/Segmented";
 import type { Engine, FraudLab, FraudPolicy, ModelKey, Scheme } from "@/lib/engine";
 import { RadarCanvas, type CanvasApi } from "./RadarCanvas";
-import { KIND_LABEL, KindIcon } from "./kinds";
+import { KindIcon } from "./KindIcon";
+import { KIND_LABEL } from "./kinds";
 
 export type FraudRule = FraudPolicy["rule"];
 
