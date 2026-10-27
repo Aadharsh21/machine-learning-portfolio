@@ -24,7 +24,10 @@ function NotFoundComponent() {
       <p className="mt-4 max-w-xl font-serif text-xl text-ink-2">
         The link may be old or mistyped. The four projects are all on the home page.
       </p>
-      <Link to="/" className="mt-8 inline-flex rounded-sm bg-ink px-4 py-2 text-sm font-semibold text-page hover:opacity-90">
+      <Link
+        to="/"
+        className="mt-8 inline-flex rounded-sm bg-ink px-4 py-2 text-sm font-semibold text-page hover:opacity-90"
+      >
         Go to the home page
       </Link>
     </main>
@@ -52,7 +55,10 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
         >
           Try again
         </button>
-        <a href="/" className="rounded-sm border border-rule-strong px-4 py-2 text-sm font-semibold text-ink">
+        <a
+          href="/"
+          className="rounded-sm border border-rule-strong px-4 py-2 text-sm font-semibold text-ink"
+        >
           Go home
         </a>
       </div>
@@ -66,10 +72,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Machine learning projects · Aadharsh Arunn" },
-      { name: "description", content: "Machine learning projects by Aadharsh Arunn, running live in your browser." },
+      {
+        name: "description",
+        content: "Machine learning projects by Aadharsh Arunn, running live in your browser.",
+      },
       { name: "author", content: "Aadharsh Arunn" },
       { property: "og:title", content: "Machine learning projects · Aadharsh Arunn" },
-      { property: "og:description", content: "Machine learning projects by Aadharsh Arunn, running live in your browser." },
+      {
+        property: "og:description",
+        content: "Machine learning projects by Aadharsh Arunn, running live in your browser.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -110,7 +122,10 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:bg-page focus:px-3 focus:py-2">
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:bg-page focus:px-3 focus:py-2"
+      >
         Skip to content
       </a>
       <div className="flex min-h-screen flex-col">

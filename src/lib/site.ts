@@ -29,10 +29,15 @@ export const PROJECTS: ProjectInfo[] = [
     accent: "rain",
     notebook: nb("01-rain-tomorrow"),
     code: ml("rain"),
-    credit: "Weather data: Australian Bureau of Meteorology, via the Rain in Australia dataset on Kaggle.",
+    credit:
+      "Weather data: Australian Bureau of Meteorology, via the Rain in Australia dataset on Kaggle.",
     facts: [
       { value: "86.1%", from: "84.2%", label: "Accuracy" },
-      { value: "0.892", from: "0.859", label: "ROC AUC (how well it ranks wet days above dry, 1 is perfect)" },
+      {
+        value: "0.892",
+        from: "0.859",
+        label: "ROC AUC (how well it ranks wet days above dry, 1 is perfect)",
+      },
     ],
   },
   {
@@ -44,7 +49,8 @@ export const PROJECTS: ProjectInfo[] = [
     accent: "fraud",
     notebook: nb("02-fraud-detection"),
     code: ml("fraud"),
-    credit: "Card payments: Credit Card Fraud Detection dataset, Worldline and the Machine Learning Group of ULB, via Kaggle.",
+    credit:
+      "Card payments: Credit Card Fraud Detection dataset, Worldline and the Machine Learning Group of ULB, via Kaggle.",
     facts: [
       { value: "8", from: "3,740", label: "False alarms in 9.3 hours" },
       { value: "+$7,803", from: "−$10,274", label: "Net result" },
@@ -75,7 +81,9 @@ export const PROJECTS: ProjectInfo[] = [
     notebook: nb("04-iris-clustering"),
     code: ml("clustering"),
     credit: "Iris data: R. A. Fisher (1936), via the UCI Machine Learning Repository.",
-    facts: [{ value: "0.904", from: "0.730", label: "Agreement with the species (ARI, 1 is perfect)" }],
+    facts: [
+      { value: "0.904", from: "0.730", label: "Agreement with the species (ARI, 1 is perfect)" },
+    ],
   },
 ];
 

@@ -25,9 +25,18 @@ export function ThemeToggle() {
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>Theme</DropdownMenuLabel>
         <DropdownMenuRadioGroup value={pref} onValueChange={(v) => setThemePref(v as ThemePref)}>
-          <DropdownMenuRadioItem value="system"><Monitor className="mr-2 h-4 w-4" aria-hidden />System</DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value="light"><Sun className="mr-2 h-4 w-4" aria-hidden />Light</DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value="dark"><Moon className="mr-2 h-4 w-4" aria-hidden />Dark</DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value="system">
+            <Monitor className="mr-2 h-4 w-4" aria-hidden />
+            System
+          </DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value="light">
+            <Sun className="mr-2 h-4 w-4" aria-hidden />
+            Light
+          </DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value="dark">
+            <Moon className="mr-2 h-4 w-4" aria-hidden />
+            Dark
+          </DropdownMenuRadioItem>
         </DropdownMenuRadioGroup>
       </DropdownMenuContent>
     </DropdownMenu>

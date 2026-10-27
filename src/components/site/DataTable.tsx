@@ -23,7 +23,11 @@ export function DataTable<R>({ caption, columns, rows, rowKey, highlight }: Prop
         <thead>
           <tr className="border-b border-rule-strong">
             {columns.map((c) => (
-              <th key={c.key} scope="col" className={`px-3 py-2 font-medium whitespace-nowrap text-ink-2 ${c.numeric ? "text-right" : "text-left"}`}>
+              <th
+                key={c.key}
+                scope="col"
+                className={`px-3 py-2 font-medium whitespace-nowrap text-ink-2 ${c.numeric ? "text-right" : "text-left"}`}
+              >
                 {c.header}
               </th>
             ))}
@@ -31,9 +35,15 @@ export function DataTable<R>({ caption, columns, rows, rowKey, highlight }: Prop
         </thead>
         <tbody>
           {rows.map((r, i) => (
-            <tr key={rowKey(r, i)} className={`border-b border-rule ${highlight?.(r) ? "bg-surface font-medium" : ""}`}>
+            <tr
+              key={rowKey(r, i)}
+              className={`border-b border-rule ${highlight?.(r) ? "bg-surface font-medium" : ""}`}
+            >
               {columns.map((c) => (
-                <td key={c.key} className={`px-3 py-2 text-ink ${c.numeric ? "tabular text-right whitespace-nowrap" : "text-left"}`}>
+                <td
+                  key={c.key}
+                  className={`px-3 py-2 text-ink ${c.numeric ? "tabular text-right whitespace-nowrap" : "text-left"}`}
+                >
                   {c.render(r)}
                 </td>
               ))}

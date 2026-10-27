@@ -18,7 +18,9 @@ export function PageIntro({ title, lede, facts, pendingFacts = 0, notebook, code
   return (
     <section className="pt-12 pb-10 sm:pt-16">
       <h1 className="font-condensed text-4xl leading-[1.05] text-ink sm:text-6xl">{title}</h1>
-      <p className="mt-5 max-w-3xl font-serif text-xl leading-relaxed text-ink-2 sm:text-2xl">{lede}</p>
+      <p className="mt-5 max-w-3xl font-serif text-xl leading-relaxed text-ink-2 sm:text-2xl">
+        {lede}
+      </p>
       {facts && facts.length > 0 ? (
         <div className="mt-10 grid grid-cols-1 gap-8 border-t border-rule pt-8 sm:grid-cols-2 lg:grid-cols-4">
           {facts.map((f) => (
@@ -26,7 +28,10 @@ export function PageIntro({ title, lede, facts, pendingFacts = 0, notebook, code
           ))}
         </div>
       ) : pendingFacts > 0 ? (
-        <div className="mt-10 grid grid-cols-1 gap-8 border-t border-rule pt-8 sm:grid-cols-2 lg:grid-cols-4" aria-hidden>
+        <div
+          className="mt-10 grid grid-cols-1 gap-8 border-t border-rule pt-8 sm:grid-cols-2 lg:grid-cols-4"
+          aria-hidden
+        >
           {Array.from({ length: pendingFacts }, (_, i) => (
             <div key={i}>
               <div className="h-12 w-32 animate-pulse rounded-sm bg-surface-2 motion-reduce:animate-none" />

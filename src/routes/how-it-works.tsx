@@ -53,9 +53,12 @@ function Verify() {
 
   return (
     <section aria-labelledby="verify-h" className="mt-16 rounded-lg border border-rule p-6 sm:p-8">
-      <h2 id="verify-h" className="font-condensed text-3xl text-ink">Verify it in your browser</h2>
+      <h2 id="verify-h" className="font-condensed text-3xl text-ink">
+        Verify it in your browser
+      </h2>
       <p className="mt-2 max-w-2xl text-ink-2">
-        The reference values were exported by the Python code when the models were trained. The check downloads about 4 MB the first time.
+        The reference values were exported by the Python code when the models were trained. The
+        check downloads about 4 MB the first time.
       </p>
       {(run.kind === "idle" || run.kind === "done") && (
         <button
@@ -69,12 +72,22 @@ function Verify() {
       <div className="mt-6" aria-live="polite">
         {run.kind === "running" && <LoadingPanel stage={run.stage} progress={run.progress} />}
         {run.kind === "error" && (
-          <ErrorPanel what={`the engine from ${ENGINE_URL}`} message={run.message} onRetry={start} />
+          <ErrorPanel
+            what={`the engine from ${ENGINE_URL}`}
+            message={run.message}
+            onRetry={start}
+          />
         )}
         {run.kind === "done" && (
           <>
-            <p className={`mb-6 flex items-center gap-2 font-semibold ${failed ? "text-critical" : "text-good"}`}>
-              {failed ? <X className="h-5 w-5" aria-hidden /> : <Check className="h-5 w-5" aria-hidden />}
+            <p
+              className={`mb-6 flex items-center gap-2 font-semibold ${failed ? "text-critical" : "text-good"}`}
+            >
+              {failed ? (
+                <X className="h-5 w-5" aria-hidden />
+              ) : (
+                <Check className="h-5 w-5" aria-hidden />
+              )}
               {failed
                 ? `${failed} of ${run.checks.length} checks failed in this browser`
                 : `All ${run.checks.length} checks pass in this browser`}
@@ -86,24 +99,47 @@ function Verify() {
               columns={[
                 { key: "p", header: "Project", render: (c) => c.project },
                 { key: "l", header: "What's compared", render: (c) => c.label },
-                { key: "n", header: "Values compared", numeric: true, render: (c) => run.engine.formatInt(c.count) },
-                { key: "e", header: "Largest difference", numeric: true, render: (c) => sci(c.maxError) },
+                {
+                  key: "n",
+                  header: "Values compared",
+                  numeric: true,
+                  render: (c) => run.engine.formatInt(c.count),
+                },
+                {
+                  key: "e",
+                  header: "Largest difference",
+                  numeric: true,
+                  render: (c) => sci(c.maxError),
+                },
                 { key: "t", header: "Allowed", numeric: true, render: (c) => sci(c.tolerance) },
                 {
                   key: "r",
                   header: "Result",
                   render: (c) =>
                     c.pass ? (
-                      <span className="inline-flex items-center gap-1 text-good"><Check className="h-4 w-4" aria-hidden />Pass</span>
+                      <span className="inline-flex items-center gap-1 text-good">
+                        <Check className="h-4 w-4" aria-hidden />
+                        Pass
+                      </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1 text-critical"><X className="h-4 w-4" aria-hidden />Fail</span>
+                      <span className="inline-flex items-center gap-1 text-critical">
+                        <X className="h-4 w-4" aria-hidden />
+                        Fail
+                      </span>
                     ),
                 },
               ]}
             />
             <p className="mt-6 text-xs break-all text-ink-3">
-              Engine v{run.engine.VERSION}, loaded from <a className="underline" href={ENGINE_URL}>{ENGINE_URL}</a>.{" "}
-              <a className="underline" href={REPO_URL}>Source on GitHub</a>.
+              Engine v{run.engine.VERSION}, loaded from{" "}
+              <a className="underline" href={ENGINE_URL}>
+                {ENGINE_URL}
+              </a>
+              .{" "}
+              <a className="underline" href={REPO_URL}>
+                Source on GitHub
+              </a>
+              .
             </p>
           </>
         )}

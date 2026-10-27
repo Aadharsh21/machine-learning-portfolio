@@ -37,7 +37,11 @@ export function Header() {
   return (
     <header className="border-b border-rule">
       <div className="page-wrap flex h-16 items-center justify-between gap-4">
-        <Link to="/" className="flex flex-col leading-none" aria-label="Aadharsh Arunn, machine learning projects: home">
+        <Link
+          to="/"
+          className="flex flex-col leading-none"
+          aria-label="Aadharsh Arunn, machine learning projects: home"
+        >
           <span className="font-condensed text-xl text-ink">Aadharsh Arunn</span>
           <span className="mt-1 text-xs text-ink-3">Machine learning projects</span>
         </Link>
@@ -54,12 +58,20 @@ export function Header() {
             aria-label={open ? "Close menu" : "Open menu"}
             onClick={() => setOpen((o) => !o)}
           >
-            {open ? <X className="h-5 w-5" aria-hidden /> : <Menu className="h-5 w-5" aria-hidden />}
+            {open ? (
+              <X className="h-5 w-5" aria-hidden />
+            ) : (
+              <Menu className="h-5 w-5" aria-hidden />
+            )}
           </button>
         </div>
       </div>
       {open && (
-        <nav id="mobile-nav" aria-label="Main" className="page-wrap flex flex-col gap-1 border-t border-rule py-3 lg:hidden">
+        <nav
+          id="mobile-nav"
+          aria-label="Main"
+          className="page-wrap flex flex-col gap-1 border-t border-rule py-3 lg:hidden"
+        >
           <NavLinks onNavigate={() => setOpen(false)} />
         </nav>
       )}

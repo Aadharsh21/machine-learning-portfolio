@@ -16,13 +16,24 @@ export function LoadingPanel({ stage, progress }: { stage: string; progress: num
         aria-valuenow={pct}
         aria-label="Loading progress"
       >
-        <div className="h-full bg-ink transition-[width] duration-200" style={{ width: `${pct}%` }} />
+        <div
+          className="h-full bg-ink transition-[width] duration-200"
+          style={{ width: `${pct}%` }}
+        />
       </div>
     </div>
   );
 }
 
-export function ErrorPanel({ message, what, onRetry }: { message: string; what: string; onRetry: () => void }) {
+export function ErrorPanel({
+  message,
+  what,
+  onRetry,
+}: {
+  message: string;
+  what: string;
+  onRetry: () => void;
+}) {
   return (
     <div role="alert" className="rounded-lg border border-rule-strong bg-surface p-6">
       <div className="flex items-start gap-3">
