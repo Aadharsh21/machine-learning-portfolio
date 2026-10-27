@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Explorer, type LiveState, type RainMode } from "@/components/rain/Explorer";
+import { RainResults } from "@/components/rain/RainResults";
 import { StationCalendar } from "@/components/rain/StationCalendar";
 import { WhatIf } from "@/components/rain/WhatIf";
 import { PageIntro } from "@/components/site/PageIntro";
@@ -210,6 +211,7 @@ function RainPage() {
             selectedDay={view.mode === "past" ? day : null}
             onOpenDay={openDay}
           />
+          <RainResults meta={rain.meta} engine={engine} />
         </>
       )}
     </main>
