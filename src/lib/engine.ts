@@ -125,8 +125,47 @@ export interface RainExplorer {
   nearest(lat: number, lon: number): { station: Station; km: number };
   map(width?: number, height?: number): RainMap; // default 760 x 600
 }
-// ---- fraud: replaced by the Fraud prompt
-export type FraudLab = any;
+// ---- fraud
+export interface FraudPolicy { model: ModelKey; rule: "threshold" | "expected_loss"; threshold?: number; reviewCost: number }
+export interface FraudOutcome {
+  seen: number; alerts: number; tp: number; fp: number; fn: number; tn: number; // tp = frauds caught, fp = false alarms, fn = frauds missed
+  blocked: number; missed: number; reviewCost: number; net: number; // dollars: net = blocked - reviewCost
+  precision: number | null; recall: number | null; hours: number; alertsPerHour: number;
+}
+export interface FraudEvent { index: number; hour: number; amount: number; probability: number; fraud: boolean; flagged: boolean; kind: "caught" | "missed" | "false_alarm" }
+export interface TradeoffPoint { threshold: number; alerts: number; tp: number; fp: number; precision: number | null; recall: number; blocked: number; net: number }
+export interface FraudScores extends Scores {
+  blocked: number; missed: number; review_cost: number; net_savings: number; alerts: number; alerts_per_hour: number;
+  avg_precision_ci95: [number, number];
+  expected_loss_rule: { blocked: number; missed: number; review_cost: number; net_savings: number; alerts: number; tp: number; fp: number };
+}
+export interface FraudMeta {
+  splits: Record<"train" | "val" | "test", { rows: number; frauds: number; start_hour: number; end_hour: number }>;
+  test_hours: number;
+  test_fraud_amount: number;
+  review_cost: number; // $5 per alert
+  models: Record<string, { label: string; test: FraudScores }>; // v1_undersampled_logistic, weighted_logistic, v2_lightgbm
+  v1_balanced_view: Scores; // v1 graded on a balanced 50/50 sample, the way v1 graded itself
+  pr_curves: Record<ModelKey, [number, number][]>; // [recall, precision] pairs
+  importance: { feature: string; mean_abs_shap: number }[];
+  source: string;
+}
+export interface FraudExplanation { index: number; probability: number; waterfall: Waterfall; contributions: { label: string; value: number }[] }
+export interface FraudLab {
+  meta: FraudMeta;
+  count: number; // 71,202 transactions
+  hours: number; // 9.3 hours
+  hourOf: Float64Array; // hours since the window opened, per transaction (sorted)
+  probability: Record<ModelKey, Float64Array>; // P(fraud) per transaction
+  stream: { amount: Float64Array; isFraud: Uint8Array };
+  flags(policy: FraudPolicy): Uint8Array; // 1 = alert
+  evaluate(policy: FraudPolicy, upTo?: number): FraudOutcome; // over the first `upTo` transactions
+  indexAt(hour: number): number; // transactions before that hour
+  events(policy: FraudPolicy, upTo?: number, limit?: number): FraudEvent[]; // frauds and alerts, newest first
+  tradeoff(model: ModelKey, reviewCost: number, points?: number): { points: TradeoffPoint[]; best: TradeoffPoint }; // strict to lenient
+  canExplain(index: number): boolean;
+  explain(index: number): Promise<FraudExplanation | null>; // v2's reasons; downloads the model on first use
+}
 // ---- insurance: replaced by the Insurance prompt
 export type InsuranceCalculator = any;
 // ---- clustering: replaced by the Clustering prompt
