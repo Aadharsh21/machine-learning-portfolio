@@ -1,7 +1,18 @@
 import type { IrisView } from "@/lib/engine";
 
-export type ViewKey = "pca" | "petals" | "sepals";
-export const VIEWS: Record<ViewKey, IrisView> = { pca: "pca", petals: [2, 3], sepals: [0, 1] };
+export type ViewKey = "pca" | "petals" | "sepals" | "lengths";
+export const VIEWS: Record<ViewKey, IrisView> = {
+  pca: "pca",
+  petals: [2, 3],
+  sepals: [0, 1],
+  lengths: [2, 0],
+};
+export const VIEW_LABEL: Record<ViewKey, string> = {
+  pca: "Principal components",
+  petals: "Petal length × petal width",
+  sepals: "Sepal length × sepal width",
+  lengths: "Petal length × sepal length",
+};
 
 export const SPECIES_SHAPE = ["circle", "square", "triangle"] as const;
 export type Shape = (typeof SPECIES_SHAPE)[number];
@@ -39,3 +50,6 @@ export function markerPath(shape: Shape, x: number, y: number, r: number): strin
   }
   return `M${x - r},${y}a${r},${r} 0 1,0 ${2 * r},0a${r},${r} 0 1,0 ${-2 * r},0`;
 }
+
+/** Starts tried when keeping the best: as many as the published runs used. */
+export const restartsFor = (method: "kmeans" | "gmm") => (method === "kmeans" ? 20 : 10);

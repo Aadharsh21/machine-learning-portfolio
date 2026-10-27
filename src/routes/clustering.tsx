@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ChoosingK } from "@/components/iris/ChoosingK";
+import { VIEWS, type ViewKey } from "@/components/iris/clusters";
 import { IrisResults } from "@/components/iris/IrisResults";
 import { Playground, type IrisSettings } from "@/components/iris/Playground";
 import { PageIntro } from "@/components/site/PageIntro";
@@ -7,40 +8,50 @@ import { ErrorPanel, LoadingPanel } from "@/components/site/Panels";
 import { useProject } from "@/hooks/useProject";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { useUrlState } from "@/hooks/useUrlState";
+import { usePageCredit } from "@/lib/credits";
 import { pageTitle, projectInfo } from "@/lib/site";
 
 const LEDE =
-  "Can an algorithm that never sees the labels find the three iris species? Run k-means or a Gaussian mixture on 150 flowers one step at a time, choose the number of clusters, and see how close each gets.";
+  "Can an algorithm that never sees the labels recover the three iris species from four flower measurements? Run k-means or a Gaussian mixture one step at a time and see where it lands.";
 
 const project = projectInfo("clustering");
 
+/** ?method=kmeans&k=3&seed=0&scaled=0&best=0&view=pca */
 interface ClusteringSearch {
   method?: "kmeans" | "gmm" | undefined;
   k?: number | undefined;
-  scaled?: "yes" | undefined;
   seed?: number | undefined;
-  starts?: 1 | undefined;
-  view?: "petals" | "sepals" | undefined;
+  scaled?: 0 | 1 | undefined;
+  best?: 0 | 1 | undefined;
+  view?: ViewKey | undefined;
 }
 
 const parseView = (s: ClusteringSearch): IrisSettings => ({
   method: s.method ?? "kmeans",
   k: s.k ?? 3,
-  scaled: s.scaled === "yes",
   seed: s.seed ?? 0,
-  starts: s.starts ?? 10,
+  scaled: s.scaled === 1,
+  best: s.best === 1,
   view: s.view ?? "pca",
 });
 const serializeView = (v: IrisSettings): ClusteringSearch => ({
   method: v.method,
   k: v.k,
-  scaled: v.method === "kmeans" && v.scaled ? "yes" : undefined,
-  seed: v.seed || undefined,
-  starts: v.starts === 1 ? 1 : undefined,
-  view: v.view === "pca" ? undefined : v.view,
+  seed: v.seed,
+  scaled: v.scaled ? 1 : 0,
+  best: v.best ? 1 : 0,
+  view: v.view,
 });
 
 const num = (v: unknown) => (typeof v === "number" ? v : typeof v === "string" ? Number(v) : NaN);
+const flag = (v: unknown) => {
+  const t = String(v);
+  return t === "1" || t === "true" || t === "yes"
+    ? 1
+    : t === "0" || t === "false" || t === "no"
+      ? 0
+      : undefined;
+};
 
 export const Route = createFileRoute("/clustering")({
   validateSearch: (s: Record<string, unknown>): ClusteringSearch => {
@@ -50,10 +61,10 @@ export const Route = createFileRoute("/clustering")({
     return {
       method: s["method"] === "kmeans" || s["method"] === "gmm" ? s["method"] : undefined,
       k: Number.isInteger(k) && k >= 1 && k <= 8 ? k : undefined,
-      scaled: s["scaled"] === "yes" ? "yes" : undefined,
       seed: Number.isInteger(seed) && seed >= 0 && seed < 1000 ? seed : undefined,
-      starts: num(s["starts"]) === 1 ? 1 : undefined,
-      view: view === "petals" || view === "sepals" ? view : undefined,
+      scaled: flag(s["scaled"]),
+      best: flag(s["best"]),
+      view: typeof view === "string" && view in VIEWS ? (view as ViewKey) : undefined,
     };
   },
   head: () => ({
@@ -79,6 +90,7 @@ function ClusteringPage() {
     retry,
   } = useProject("iris", (e, o) => e.loadIris(o));
   const reducedMotion = useReducedMotion();
+  usePageCredit(pg ? ["Data: Fisher's iris data (1936), as bundled with scikit-learn."] : null);
 
   const gmm = pg?.meta.methods["gmm_raw"];
   const km = pg?.meta.methods["kmeans_raw"];
@@ -123,18 +135,11 @@ function ClusteringPage() {
         </div>
       ) : (
         <>
-          <Playground
-            pg={pg}
-            engine={engine}
-            settings={settings}
-            onSettings={setSettings}
-            reducedMotion={reducedMotion}
-          />
+          <Playground pg={pg} engine={engine} settings={settings} onSettings={setSettings} />
           <ChoosingK
             meta={pg.meta}
             k={settings.k}
-            scaled={settings.method === "kmeans" && settings.scaled}
-            onPick={(k, method) => tryOut({ k, method })}
+            onPick={(k, method, scaled) => tryOut({ k, method, scaled })}
           />
           <IrisResults meta={pg.meta} engine={engine} onTry={tryOut} />
         </>

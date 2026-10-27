@@ -11,13 +11,15 @@ interface Props {
   colors: string[];
   /** cluster matched to each species (from the finished run) */
   mapping: number[];
+  /** draw each flower's true species as its shape */
+  showSpecies: boolean;
   label: string;
 }
 
 const PAD = { left: 52, right: 14, top: 14, bottom: 44 };
 
 /** The 150 flowers in a 2-D view: colour is the cluster, shape the true species. */
-export function IrisPlot({ pg, view, frames, colors, mapping, label }: Props) {
+export function IrisPlot({ pg, view, frames, colors, mapping, showSpecies, label }: Props) {
   const [ref, width] = useElementWidth<HTMLDivElement>();
   const [hover, setHover] = useState<number | null>(null);
   const frame = frames[frames.length - 1];
@@ -52,8 +54,8 @@ export function IrisPlot({ pg, view, frames, colors, mapping, label }: Props) {
   const axis =
     view === "pca"
       ? [
-          `First principal component (${Math.round((pg.explained[0] ?? 0) * 100)}% of the variation)`,
-          `Second (${Math.round((pg.explained[1] ?? 0) * 100)}%)`,
+          `PC1 (${Math.round((pg.explained[0] ?? 0) * 100)}% of the variation)`,
+          `PC2 (${Math.round((pg.explained[1] ?? 0) * 100)}%)`,
         ]
       : [
           `${featureLabel(pg.features[view[0]] ?? "")} (cm)`,
@@ -141,6 +143,8 @@ export function IrisPlot({ pg, view, frames, colors, mapping, label }: Props) {
                   fillOpacity={0.08}
                   stroke={colors[c]}
                   strokeWidth={1.5}
+                  // browsers that can animate path data ease the ellipse between iterations
+                  style={{ transitionProperty: "d", transitionDuration: "300ms" }}
                 />
               );
             })}
@@ -152,14 +156,14 @@ export function IrisPlot({ pg, view, frames, colors, mapping, label }: Props) {
                 <path
                   key={i}
                   d={markerPath(
-                    SPECIES_SHAPE[species] ?? "circle",
+                    showSpecies ? (SPECIES_SHAPE[species] ?? "circle") : "circle",
                     sx(x),
                     sy(y),
                     hover === i ? 6 : 4.5,
                   )}
                   fill={colors[cluster]}
-                  stroke={wrong ? "var(--ink)" : "var(--page)"}
-                  strokeWidth={wrong ? 1.5 : 1}
+                  stroke={showSpecies && wrong ? "var(--ink)" : "var(--page)"}
+                  strokeWidth={showSpecies && wrong ? 1.5 : 1}
                   className="transition-[fill] duration-300"
                 />
               );
@@ -187,21 +191,17 @@ export function IrisPlot({ pg, view, frames, colors, mapping, label }: Props) {
               const [x, y] = pg.project(m, view);
               const X = sx(x);
               const Y = sy(y);
+              // centres glide to their next position (instantly with reduced motion)
               return (
-                <g key={`c${c}`}>
-                  <circle
-                    cx={X}
-                    cy={Y}
-                    r={9}
-                    fill={colors[c]}
-                    stroke="var(--ink)"
-                    strokeWidth={2}
-                  />
-                  <path
-                    d={`M${X - 4},${Y - 4}L${X + 4},${Y + 4}M${X + 4},${Y - 4}L${X - 4},${Y + 4}`}
-                    stroke="var(--page)"
-                    strokeWidth={2}
-                  />
+                <g
+                  key={`c${c}`}
+                  style={{
+                    transform: `translate(${X}px, ${Y}px)`,
+                    transition: "transform 300ms ease",
+                  }}
+                >
+                  <circle r={9} fill={colors[c]} stroke="var(--ink)" strokeWidth={2} />
+                  <path d="M-4,-4L4,4M4,-4L-4,4" stroke="var(--page)" strokeWidth={2.5} />
                 </g>
               );
             })}
