@@ -39,7 +39,7 @@ export function RangeSlider({
   return (
     <div className="relative">
       <SliderPrimitive.Root
-        className="relative flex h-11 w-full touch-none items-center select-none data-[disabled]:opacity-50 sm:h-7"
+        className="relative flex h-11 w-full touch-none items-center select-none data-[disabled]:opacity-50 lg:h-7"
         min={min}
         max={max}
         step={step}

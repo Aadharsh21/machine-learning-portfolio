@@ -17,7 +17,7 @@ export function ThemeToggle() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        className="inline-flex h-9 w-9 items-center justify-center rounded-sm text-ink-2 hover:bg-surface hover:text-ink"
+        className="inline-flex h-11 w-11 items-center justify-center rounded-sm text-ink-2 hover:bg-surface hover:text-ink lg:h-9 lg:w-9"
         aria-label={`Theme: ${name}. Change theme`}
       >
         <Icon className="h-4 w-4" aria-hidden />

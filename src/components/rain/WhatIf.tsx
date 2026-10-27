@@ -123,7 +123,7 @@ function WindRow({
         value={value === null ? "none" : String(value)}
         onValueChange={(v) => onChange(v === "none" ? null : Number(v))}
       >
-        <SelectTrigger aria-labelledby={id} className="mt-1.5 h-11 border-rule-strong sm:h-9">
+        <SelectTrigger aria-labelledby={id} className="mt-1.5 h-11 border-rule-strong lg:h-9">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
@@ -187,7 +187,7 @@ export function WhatIf({ engine, compass, forecast: f, edits, onEdits, forecastF
               type="button"
               onClick={() => onEdits({})}
               disabled={!hasEdits(edits)}
-              className="inline-flex h-11 items-center gap-2 rounded-sm border border-rule-strong px-3 text-sm font-medium text-ink hover:bg-surface disabled:cursor-not-allowed disabled:opacity-40 sm:h-9"
+              className="inline-flex h-11 items-center gap-2 rounded-sm border border-rule-strong px-3 text-sm font-medium text-ink hover:bg-surface disabled:cursor-not-allowed disabled:opacity-40 lg:h-9"
             >
               <RotateCcw className="h-4 w-4" aria-hidden /> Reset to recorded
             </button>

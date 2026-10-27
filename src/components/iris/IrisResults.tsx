@@ -70,7 +70,7 @@ export function IrisResults({ meta, engine, onTry }: Props) {
                 return patch ? (
                   <button
                     type="button"
-                    className="text-left underline underline-offset-2 hover:text-ink-2"
+                    className="-my-2 min-h-11 text-left underline underline-offset-2 hover:text-ink-2 lg:my-0 lg:min-h-0"
                     onClick={() => onTry(patch)}
                   >
                     {r.label}

@@ -143,7 +143,7 @@ function AllInputs({ contributions }: { contributions: { label: string; value: n
         aria-expanded={open}
         aria-controls="all-inputs"
         onClick={() => setOpen((o) => !o)}
-        className="mt-3 inline-flex h-11 items-center gap-1.5 rounded-sm text-sm font-medium text-ink underline-offset-4 hover:underline sm:h-8"
+        className="mt-3 inline-flex h-11 items-center gap-1.5 rounded-sm text-sm font-medium text-ink underline-offset-4 hover:underline lg:h-8"
       >
         <ChevronDown
           className={`h-4 w-4 transition-transform motion-reduce:transition-none ${open ? "rotate-180" : ""}`}

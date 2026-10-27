@@ -20,7 +20,7 @@ export function Segmented<V extends string>({ label, value, options, onChange }:
         <ToggleGroupItem
           key={o.value}
           value={o.value}
-          className="h-8 rounded-sm px-3 text-sm text-ink-2 data-[state=on]:bg-ink data-[state=on]:text-page"
+          className="h-11 rounded-sm px-3 text-sm text-ink-2 hover:bg-surface hover:text-ink data-[state=on]:bg-ink data-[state=on]:text-page data-[state=on]:hover:bg-ink data-[state=on]:hover:text-page lg:h-8"
         >
           {o.label}
         </ToggleGroupItem>

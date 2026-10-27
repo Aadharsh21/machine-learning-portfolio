@@ -64,7 +64,7 @@ function Verify() {
         <button
           type="button"
           onClick={start}
-          className="mt-6 inline-flex items-center rounded-sm bg-ink px-4 py-2 text-sm font-semibold text-page hover:opacity-90"
+          className="mt-6 inline-flex min-h-11 items-center rounded-sm bg-ink px-4 py-2 text-sm font-semibold text-page hover:opacity-90 lg:min-h-0"
         >
           {run.kind === "done" ? "Run it again" : "Run the check"}
         </button>

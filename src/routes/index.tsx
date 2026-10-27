@@ -62,7 +62,7 @@ function Home() {
               </dl>
               <Link
                 to={p.path}
-                className="mt-auto inline-flex items-center gap-1.5 self-start pt-6 text-sm font-semibold text-ink underline-offset-4 hover:underline"
+                className="mt-auto inline-flex min-h-11 items-center gap-1.5 self-start pt-6 text-sm font-semibold text-ink underline-offset-4 hover:underline"
               >
                 Open the model <ArrowRight className="h-4 w-4" aria-hidden />
               </Link>
@@ -106,7 +106,7 @@ function Home() {
           </div>
           <Link
             to="/how-it-works"
-            className="inline-flex items-center gap-1.5 text-sm font-semibold text-ink underline-offset-4 hover:underline"
+            className="inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-ink underline-offset-4 hover:underline"
           >
             How it works <ArrowRight className="h-4 w-4" aria-hidden />
           </Link>

@@ -297,6 +297,12 @@
     outline: 2px solid var(--focus);
     outline-offset: 2px;
   }
+  /* a 44px touch target on phones and tablets */
+  @media (max-width: 1023px) {
+    .range-day {
+      height: 44px;
+    }
+  }
 }
 
 @layer base {

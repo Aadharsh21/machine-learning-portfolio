@@ -44,7 +44,7 @@ interface Props {
 }
 
 const btn =
-  "inline-flex h-11 items-center justify-center gap-1.5 rounded-sm border border-rule-strong px-3 text-sm font-medium text-ink hover:bg-surface disabled:opacity-40 sm:h-9";
+  "inline-flex h-11 items-center justify-center gap-1.5 rounded-sm border border-rule-strong px-3 text-sm font-medium text-ink hover:bg-surface disabled:opacity-40 lg:h-9";
 
 /** Run k-means or a Gaussian mixture on the iris flowers, one iteration at a time. */
 export function Playground({ pg, engine, settings: s, onSettings }: Props) {
@@ -185,7 +185,7 @@ export function Playground({ pg, engine, settings: s, onSettings }: Props) {
               View
             </p>
             <Select value={s.view} onValueChange={(view) => change({ view: view as ViewKey })}>
-              <SelectTrigger aria-labelledby="view-l" className="h-11 border-rule-strong sm:h-9">
+              <SelectTrigger aria-labelledby="view-l" className="h-11 border-rule-strong lg:h-9">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>

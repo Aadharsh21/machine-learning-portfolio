@@ -14,7 +14,7 @@ interface Props {
 }
 
 const btn =
-  "inline-flex h-11 min-w-11 items-center justify-center gap-1.5 rounded-sm border border-rule-strong px-3 text-sm font-medium text-ink hover:bg-surface disabled:opacity-40 sm:h-9 sm:min-w-9";
+  "inline-flex h-11 min-w-11 items-center justify-center gap-1.5 rounded-sm border border-rule-strong px-3 text-sm font-medium text-ink hover:bg-surface disabled:opacity-40 lg:h-9 lg:min-w-9";
 
 /** One thin bar per test day (the share of stations where it rained next day), with a scrubber. */
 export function Timeline({ rain, day, onDay, playing, onPlaying, canPlay }: Props) {

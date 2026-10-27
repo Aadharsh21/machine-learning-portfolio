@@ -7,7 +7,7 @@ import { ACCENT_BG } from "./accent";
 import { ThemeToggle } from "./ThemeToggle";
 
 const linkCls =
-  "inline-flex items-center gap-2 rounded-sm px-2 py-1.5 text-sm text-ink-2 hover:text-ink data-[status=active]:text-ink data-[status=active]:font-semibold";
+  "inline-flex min-h-11 items-center gap-2 rounded-sm px-2 py-1.5 text-sm text-ink-2 hover:text-ink data-[status=active]:text-ink data-[status=active]:font-semibold lg:min-h-0";
 
 function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   return (
@@ -52,7 +52,7 @@ export function Header() {
           <ThemeToggle />
           <button
             type="button"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-sm text-ink-2 hover:bg-surface lg:hidden"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-sm text-ink-2 hover:bg-surface lg:hidden"
             aria-expanded={open}
             aria-controls="mobile-nav"
             aria-label={open ? "Close menu" : "Open menu"}

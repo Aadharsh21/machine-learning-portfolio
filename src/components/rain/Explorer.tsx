@@ -127,7 +127,7 @@ export function Explorer(props: Props) {
           <Select value={station} onValueChange={props.onStation}>
             <SelectTrigger
               aria-labelledby="station-label"
-              className="h-11 w-52 border-rule-strong sm:h-9"
+              className="h-11 w-52 border-rule-strong lg:h-9"
             >
               <SelectValue />
             </SelectTrigger>
@@ -143,7 +143,7 @@ export function Explorer(props: Props) {
         <button
           type="button"
           onClick={locate}
-          className="inline-flex h-11 items-center gap-2 rounded-sm border border-rule-strong px-3 text-sm font-medium text-ink hover:bg-surface sm:h-9"
+          className="inline-flex h-11 items-center gap-2 rounded-sm border border-rule-strong px-3 text-sm font-medium text-ink hover:bg-surface lg:h-9"
         >
           <LocateFixed className="h-4 w-4" aria-hidden /> Nearest to me
         </button>
@@ -176,7 +176,7 @@ export function Explorer(props: Props) {
                     <button
                       type="button"
                       onClick={props.onRetryLive}
-                      className="inline-flex h-9 items-center gap-1.5 rounded-sm bg-ink px-3 text-sm font-medium text-page hover:opacity-90"
+                      className="inline-flex h-11 items-center gap-1.5 rounded-sm bg-ink px-3 text-sm font-medium text-page hover:opacity-90 lg:h-9"
                     >
                       <RotateCcw className="h-4 w-4" aria-hidden /> Try again
                     </button>

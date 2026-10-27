@@ -267,7 +267,7 @@ export function TradeoffChart({ lab, engine, policy, onThreshold }: Props) {
       <button
         type="button"
         onClick={() => use(best.threshold)}
-        className="mt-4 inline-flex h-11 items-center rounded-sm border border-rule-strong px-3 text-sm font-medium text-ink hover:bg-surface sm:h-9"
+        className="mt-4 inline-flex h-11 items-center rounded-sm border border-rule-strong px-3 text-sm font-medium text-ink hover:bg-surface lg:h-9"
       >
         Use the best cut-off ({engine.formatChance(best.threshold)}) on the radar
       </button>

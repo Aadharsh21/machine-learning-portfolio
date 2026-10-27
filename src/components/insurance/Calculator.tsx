@@ -27,7 +27,7 @@ interface Props {
 const OBESE = 30;
 const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 const stepBtn =
-  "inline-flex h-11 w-11 items-center justify-center rounded-sm border border-rule-strong text-ink hover:bg-surface disabled:opacity-40 sm:h-9 sm:w-9";
+  "inline-flex h-11 w-11 items-center justify-center rounded-sm border border-rule-strong text-ink hover:bg-surface disabled:opacity-40 lg:h-9 lg:w-9";
 
 function Field({
   label,
@@ -240,7 +240,7 @@ export function Calculator({ calc, engine, profile: p, quote: q, onProfile }: Pr
           </div>
           <Field label="Region" id="region-l">
             <Select value={String(p.region)} onValueChange={(v) => set({ region: Number(v) })}>
-              <SelectTrigger aria-labelledby="region-l" className="h-11 border-rule-strong sm:h-9">
+              <SelectTrigger aria-labelledby="region-l" className="h-11 border-rule-strong lg:h-9">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -277,7 +277,7 @@ export function Calculator({ calc, engine, profile: p, quote: q, onProfile }: Pr
               <span className="tabular font-semibold text-ink">{engine.formatUsd(q.charges)}</span>
               <Popover>
                 <PopoverTrigger
-                  className="inline-flex h-8 w-8 items-center justify-center rounded-full text-ink-3 hover:bg-surface hover:text-ink"
+                  className="inline-flex h-11 w-11 items-center justify-center rounded-full text-ink-3 hover:bg-surface hover:text-ink lg:h-8 lg:w-8"
                   aria-label="Why the average is higher than the typical charge"
                 >
                   <Info className="h-4 w-4" aria-hidden />

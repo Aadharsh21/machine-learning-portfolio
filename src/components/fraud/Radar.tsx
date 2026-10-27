@@ -42,7 +42,7 @@ const SPEEDS: { value: string; label: string }[] = [
 const sigmoid = (z: number) => 1 / (1 + Math.exp(-z));
 const logit = (p: number) => Math.log(p / (1 - p));
 const btn =
-  "inline-flex h-11 items-center justify-center gap-1.5 rounded-sm border border-rule-strong px-3 text-sm font-medium text-ink hover:bg-surface sm:h-9";
+  "inline-flex h-11 items-center justify-center gap-1.5 rounded-sm border border-rule-strong px-3 text-sm font-medium text-ink hover:bg-surface lg:h-9";
 
 /** Replays the 71,202 test payments with any alert policy. */
 export function Radar(props: Props) {
@@ -326,7 +326,7 @@ export function Radar(props: Props) {
                     type="button"
                     onClick={() => props.onSelect(e.index)}
                     aria-pressed={selected === e.index}
-                    className={`grid w-full grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-3 px-2 py-2.5 text-left text-sm hover:bg-surface ${
+                    className={`grid min-h-11 w-full grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-3 px-2 py-2.5 text-left text-sm hover:bg-surface lg:min-h-0 ${
                       selected === e.index ? "bg-surface" : ""
                     }`}
                   >
