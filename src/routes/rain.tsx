@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Explorer, type LiveState, type RainMode } from "@/components/rain/Explorer";
+import { StationCalendar } from "@/components/rain/StationCalendar";
 import { WhatIf } from "@/components/rain/WhatIf";
 import { PageIntro } from "@/components/site/PageIntro";
 import { ErrorPanel, LoadingPanel } from "@/components/site/Panels";
@@ -127,6 +128,16 @@ function RainPage() {
       ? (live.data.readings.get(station)?.forecastFields ?? [])
       : [];
 
+  const openDay = (d: number) => {
+    if (!rain) return;
+    setPlaying(false);
+    setView((v) => ({ ...v, mode: "past", date: isoDay(rain.dateOf(d)) }));
+    document
+      .getElementById("explorer")
+      ?.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth", block: "start" });
+  };
+  const stationName = rain?.stations.find((s) => s.id === station)?.name ?? station;
+
   const v2 = rain?.meta.models["v2_lightgbm"]?.test;
   const v1 = rain?.meta.models["v1_logistic"]?.test;
   const facts =
@@ -181,14 +192,25 @@ function RainPage() {
         />
       )}
       {rain && engine && (
-        <WhatIf
-          engine={engine}
-          compass={rain.compass}
-          forecast={forecast}
-          edits={edits}
-          onEdits={setEdits}
-          forecastFields={forecastFields}
-        />
+        <>
+          <WhatIf
+            engine={engine}
+            compass={rain.compass}
+            forecast={forecast}
+            edits={edits}
+            onEdits={setEdits}
+            forecastFields={forecastFields}
+          />
+          <StationCalendar
+            rain={rain}
+            engine={engine}
+            scheme={scheme}
+            station={station}
+            stationName={stationName}
+            selectedDay={view.mode === "past" ? day : null}
+            onOpenDay={openDay}
+          />
+        </>
       )}
     </main>
   );
