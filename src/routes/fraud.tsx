@@ -1,13 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
+import { Radar, type FraudRule } from "@/components/fraud/Radar";
 import { ReportCards } from "@/components/fraud/ReportCards";
 import { PageIntro } from "@/components/site/PageIntro";
 import { ErrorPanel, LoadingPanel } from "@/components/site/Panels";
 import { useProject } from "@/hooks/useProject";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { useUrlState } from "@/hooks/useUrlState";
 import type { FraudPolicy, ModelKey } from "@/lib/engine";
-
-type FraudRule = FraudPolicy["rule"];
 import { pageTitle, projectInfo } from "@/lib/site";
+import { useScheme } from "@/lib/theme";
 
 const LEDE =
   "Flags fraudulent card payments among 284,807 transactions made over two days, 492 of them fraud. Replay the last 9.3 hours, set your own alert rule and review cost, and see what each choice catches and costs.";
@@ -68,7 +70,7 @@ export const Route = createFileRoute("/fraud")({
 
 function FraudPage() {
   const search = Route.useSearch();
-  useUrlState(search, parseView, serializeView);
+  const [view, setView] = useUrlState(search, parseView, serializeView);
   const {
     data: lab,
     engine,
@@ -77,6 +79,14 @@ function FraudPage() {
     error,
     retry,
   } = useProject("fraud", (e, o) => e.loadFraud(o));
+  const scheme = useScheme();
+  const reducedMotion = useReducedMotion();
+  const [selected, setSelected] = useState<number | null>(null);
+
+  const policy: FraudPolicy = useMemo(
+    () => ({ model: view.model, rule: view.rule, threshold: view.t, reviewCost: view.cost }),
+    [view.model, view.rule, view.t, view.cost],
+  );
 
   const v2 = lab?.meta.models["v2_lightgbm"]?.test;
   const v1 = lab?.meta.models["v1_undersampled_logistic"]?.test;
@@ -118,7 +128,22 @@ function FraudPage() {
           <LoadingPanel stage={stage} progress={progress} />
         </div>
       ) : (
-        <ReportCards meta={lab.meta} engine={engine} />
+        <>
+          <ReportCards meta={lab.meta} engine={engine} />
+          <Radar
+            lab={lab}
+            engine={engine}
+            scheme={scheme}
+            policy={policy}
+            onModel={(model) => setView((v) => ({ ...v, model }))}
+            onRule={(rule) => setView((v) => ({ ...v, rule }))}
+            onThreshold={(t) => setView((v) => ({ ...v, t }))}
+            onReviewCost={(cost) => setView((v) => ({ ...v, cost }))}
+            selected={selected}
+            onSelect={setSelected}
+            reducedMotion={reducedMotion}
+          />
+        </>
       )}
     </main>
   );
