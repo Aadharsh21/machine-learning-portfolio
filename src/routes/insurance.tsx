@@ -4,7 +4,7 @@ import { Bands } from "@/components/insurance/Bands";
 import { Calculator } from "@/components/insurance/Calculator";
 import { InsuranceResults } from "@/components/insurance/InsuranceResults";
 import { PageIntro } from "@/components/site/PageIntro";
-import { ErrorPanel, LoadingPanel } from "@/components/site/Panels";
+import { ErrorPanel, LoadingPanel, MODEL_FILES_ERROR } from "@/components/site/Panels";
 import { useProject } from "@/hooks/useProject";
 import { useUrlState } from "@/hooks/useUrlState";
 import { usePageCredit } from "@/lib/credits";
@@ -116,12 +116,17 @@ function InsurancePage() {
         title={project.title}
         lede={LEDE}
         facts={facts}
-        pendingFacts={2}
+        pendingFacts={error ? 0 : 2}
         notebook={project.notebook}
         code={project.code}
       />
       {error ? (
-        <ErrorPanel what="the insurance model" message={error} onRetry={retry} />
+        <ErrorPanel
+          what="the insurance model"
+          title={MODEL_FILES_ERROR}
+          message={error}
+          onRetry={retry}
+        />
       ) : !calc || !engine || !quote ? (
         <div className="min-h-[40rem] border-t border-rule pt-8">
           <LoadingPanel stage={stage} progress={progress} />

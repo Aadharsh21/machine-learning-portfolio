@@ -5,7 +5,7 @@ import { RainResults } from "@/components/rain/RainResults";
 import { StationCalendar } from "@/components/rain/StationCalendar";
 import { WhatIf } from "@/components/rain/WhatIf";
 import { PageIntro } from "@/components/site/PageIntro";
-import { ErrorPanel, LoadingPanel } from "@/components/site/Panels";
+import { ErrorPanel, LoadingPanel, MODEL_FILES_ERROR } from "@/components/site/Panels";
 import { useProject } from "@/hooks/useProject";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { useUrlState } from "@/hooks/useUrlState";
@@ -167,12 +167,17 @@ function RainPage() {
         title={project.title}
         lede={LEDE}
         facts={facts}
-        pendingFacts={2}
+        pendingFacts={error ? 0 : 2}
         notebook={project.notebook}
         code={project.code}
       />
       {error ? (
-        <ErrorPanel what="the rain model" message={error} onRetry={retry} />
+        <ErrorPanel
+          what="the rain model"
+          title={MODEL_FILES_ERROR}
+          message={error}
+          onRetry={retry}
+        />
       ) : !rain || !engine ? (
         <div className="min-h-[40rem] border-t border-rule pt-8">
           <LoadingPanel stage={stage} progress={progress} />

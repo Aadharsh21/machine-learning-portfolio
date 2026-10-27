@@ -4,7 +4,7 @@ import { VIEWS, type ViewKey } from "@/components/iris/clusters";
 import { IrisResults } from "@/components/iris/IrisResults";
 import { Playground, type IrisSettings } from "@/components/iris/Playground";
 import { PageIntro } from "@/components/site/PageIntro";
-import { ErrorPanel, LoadingPanel } from "@/components/site/Panels";
+import { ErrorPanel, LoadingPanel, MODEL_FILES_ERROR } from "@/components/site/Panels";
 import { useProject } from "@/hooks/useProject";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { useUrlState } from "@/hooks/useUrlState";
@@ -116,12 +116,17 @@ function ClusteringPage() {
         title={project.title}
         lede={LEDE}
         facts={facts}
-        pendingFacts={2}
+        pendingFacts={error ? 0 : 2}
         notebook={project.notebook}
         code={project.code}
       />
       {error ? (
-        <ErrorPanel what="the clustering playground" message={error} onRetry={retry} />
+        <ErrorPanel
+          what="the clustering playground"
+          title={MODEL_FILES_ERROR}
+          message={error}
+          onRetry={retry}
+        />
       ) : !pg || !engine ? (
         <div className="min-h-[40rem] border-t border-rule pt-8">
           <LoadingPanel stage={stage} progress={progress} />
