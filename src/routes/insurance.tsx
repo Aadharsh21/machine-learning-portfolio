@@ -12,7 +12,7 @@ import type { Profile } from "@/lib/engine";
 import { pageTitle, projectInfo } from "@/lib/site";
 
 const LEDE =
-  "What will a customer's medical care cost in a year? A model of 1,338 US insurance customers that gives a likely range, not just a number, and shows exactly which inputs pushed it up or down.";
+  "Estimates a customer's yearly medical charges from six facts: age, sex, BMI, children, smoking and region, learned from 1,338 US customers. Describe someone and see the typical bill, the range most people like them fall in, and exactly how each fact moves it.";
 
 const project = projectInfo("insurance");
 
@@ -20,31 +20,32 @@ const project = projectInfo("insurance");
 const REGIONS = ["northeast", "northwest", "southeast", "southwest"] as const;
 type Region = (typeof REGIONS)[number];
 
+/** ?age=35&sex=f&bmi=27&children=1&smoker=0&region=northeast */
 interface InsuranceSearch {
   age?: number | undefined;
-  sex?: "female" | "male" | undefined;
+  sex?: "f" | "m" | undefined;
   bmi?: number | undefined;
   children?: number | undefined;
-  smoker?: "yes" | "no" | undefined;
+  smoker?: 0 | 1 | undefined;
   region?: Region | undefined;
 }
 
-const DEFAULT: Profile = { age: 30, male: 1, bmi: 31, children: 0, smoker: 1, region: 2 };
+const DEFAULT: Profile = { age: 35, male: 0, bmi: 27, children: 1, smoker: 0, region: 0 };
 
 const parseView = (s: InsuranceSearch): Profile => ({
   age: s.age ?? DEFAULT.age,
-  male: s.sex === undefined ? DEFAULT.male : s.sex === "male" ? 1 : 0,
+  male: s.sex === undefined ? DEFAULT.male : s.sex === "m" ? 1 : 0,
   bmi: s.bmi ?? DEFAULT.bmi,
   children: s.children ?? DEFAULT.children,
-  smoker: s.smoker === undefined ? DEFAULT.smoker : s.smoker === "yes" ? 1 : 0,
+  smoker: s.smoker ?? DEFAULT.smoker,
   region: s.region === undefined ? DEFAULT.region : REGIONS.indexOf(s.region),
 });
 const serializeView = (p: Profile): InsuranceSearch => ({
   age: p.age,
-  sex: p.male ? "male" : "female",
+  sex: p.male ? "m" : "f",
   bmi: p.bmi,
   children: p.children,
-  smoker: p.smoker ? "yes" : "no",
+  smoker: p.smoker,
   region: REGIONS[p.region],
 });
 
@@ -56,12 +57,19 @@ export const Route = createFileRoute("/insurance")({
     const bmi = num(s["bmi"]);
     const children = num(s["children"]);
     const region = s["region"];
+    const sex = s["sex"];
+    const smoker = String(s["smoker"]);
     return {
       age: Number.isInteger(age) && age >= 18 && age <= 64 ? age : undefined,
-      sex: s["sex"] === "female" || s["sex"] === "male" ? s["sex"] : undefined,
-      bmi: bmi >= 16 && bmi <= 53 ? Math.round(bmi * 10) / 10 : undefined,
+      sex: sex === "f" || sex === "female" ? "f" : sex === "m" || sex === "male" ? "m" : undefined,
+      bmi: bmi >= 15 && bmi <= 55 ? Math.round(bmi * 10) / 10 : undefined,
       children: Number.isInteger(children) && children >= 0 && children <= 5 ? children : undefined,
-      smoker: s["smoker"] === "yes" || s["smoker"] === "no" ? s["smoker"] : undefined,
+      smoker:
+        smoker === "1" || smoker === "yes" || smoker === "true"
+          ? 1
+          : smoker === "0" || smoker === "no" || smoker === "false"
+            ? 0
+            : undefined,
       region: REGIONS.includes(region as Region) ? (region as Region) : undefined,
     };
   },
@@ -89,15 +97,7 @@ function InsurancePage() {
   } = useProject("insurance", (e, o) => e.loadInsurance(o));
   const quote = useMemo(() => (calc ? calc.quote(profile) : null), [calc, profile]);
 
-  usePageCredit(
-    calc
-      ? [
-          "Data: Medical Cost Personal Datasets, via ",
-          { text: "Kaggle", href: "https://www.kaggle.com/datasets/mirichoi0218/insurance" },
-          ".",
-        ]
-      : null,
-  );
+  usePageCredit(calc ? [`Data: ${calc.meta.source}.`] : null);
 
   const v2 = calc?.meta.models["v2_linear_interactions"]?.cv;
   const v1 = calc?.meta.models["v1_age_only"]?.cv;
@@ -107,18 +107,12 @@ function InsurancePage() {
           {
             value: v2.r2.mean.toFixed(3),
             from: v1.r2.mean.toFixed(3),
-            label: "R²: share of the variation in charges explained",
+            label: "R², the share of the variation explained",
           },
           {
             value: engine.formatUsd(v2.mae.mean),
             from: engine.formatUsd(v1.mae.mean),
-            label: "typical error on customers it hadn't seen",
-          },
-          {
-            value: engine.formatPercent(calc.meta.interval.coverage),
-            label: `of real charges fell inside the ${engine.formatPercent(
-              calc.meta.interval.target,
-            )} range`,
+            label: "typical error (mean absolute error)",
           },
         ]
       : undefined;
@@ -129,7 +123,7 @@ function InsurancePage() {
         title={project.title}
         lede={LEDE}
         facts={facts}
-        pendingFacts={3}
+        pendingFacts={2}
         notebook={project.notebook}
         code={project.code}
       />

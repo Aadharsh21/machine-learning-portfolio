@@ -15,13 +15,13 @@ interface Props {
 const GROUPS: InsuranceGroup[] = ["non_smoker", "smoker_bmi_under_30", "smoker_bmi_30_plus"];
 const COLOR: Record<InsuranceGroup, string> = {
   non_smoker: "var(--series-1)",
-  smoker_bmi_under_30: "var(--series-2)",
-  smoker_bmi_30_plus: "var(--series-3)",
+  smoker_bmi_under_30: "var(--series-4)",
+  smoker_bmi_30_plus: "var(--series-8)",
 };
 const PAD = { left: 56, top: 16, bottom: 44 };
 const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
-/** Charges against age for all customers, coloured by band, with the current profile's line. */
+/** Charges against age for all customers, coloured by band, with the current profile's typical charge. */
 export function Bands({ calc, engine, profile, onProfile }: Props) {
   const [ref, width] = useElementWidth<HTMLDivElement>();
   const [hover, setHover] = useState<number | null>(null);
@@ -42,8 +42,9 @@ export function Bands({ calc, engine, profile, onProfile }: Props) {
     return `M${up.join("L")}L${down.join("L")}Z`;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [line, width]);
+  // the profile's typical (median) charge at every age
   const path = line
-    .map((r, i) => `${i ? "L" : "M"}${x(r.age).toFixed(1)},${y(r.charges).toFixed(1)}`)
+    .map((r, i) => `${i ? "L" : "M"}${x(r.age).toFixed(1)},${y(r.median).toFixed(1)}`)
     .join("");
 
   // where to put each band's direct label: its average among the oldest customers
@@ -72,37 +73,26 @@ export function Bands({ calc, engine, profile, onProfile }: Props) {
     return best;
   };
   const hc = hover === null ? undefined : calc.customers[hover];
-  const you = calc.model.predict(profile);
+  const you = line.find((r) => r.age === profile.age)?.median ?? 0;
 
   return (
     <section aria-labelledby="bands-h" className="mt-16 border-t border-rule pt-10">
       <h2 id="bands-h" className="font-condensed text-3xl text-ink">
         Three bands, not two
       </h2>
-      <p className="mt-2 max-w-3xl text-ink-2">
-        The first version drew one line for smokers and one for everyone else. The data has three
-        bands: smoking matters, but smoking with a BMI of 30 or more roughly doubles it again.
-      </p>
-      <dl className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-3">
-        {GROUPS.map((g) => (
-          <div key={g} className="border-l-2 pl-4" style={{ borderColor: COLOR[g] }}>
-            <dt className="text-sm text-ink-2">{calc.groupLabels[g]}</dt>
-            <dd className="font-condensed tabular mt-1 text-4xl leading-none text-ink">
-              {engine.formatUsd(calc.meta.group_means[g])}
-            </dd>
-            <dd className="mt-1 text-xs text-ink-3">
-              average a year, {engine.formatInt(calc.customers.filter((c) => c.group === g).length)}{" "}
-              customers
-            </dd>
-          </div>
-        ))}
-      </dl>
 
-      <figure className="m-0 mt-8">
+      <figure className="m-0 mt-6">
         <Legend
           items={[
-            ...GROUPS.map((g) => ({ label: calc.groupLabels[g], color: COLOR[g] })),
-            { label: "Your quote across ages", color: "var(--ink)", shape: "line" as const },
+            ...GROUPS.map((g) => ({
+              label: `${calc.groupLabels[g]}, average ${engine.formatUsd(calc.meta.group_means[g])}`,
+              color: COLOR[g],
+            })),
+            {
+              label: "This customer's typical charge at each age",
+              color: "var(--ink)",
+              shape: "line" as const,
+            },
           ]}
         />
         <div ref={ref} className="relative mt-3">
@@ -114,7 +104,7 @@ export function Bands({ calc, engine, profile, onProfile }: Props) {
               role="img"
               aria-label={`Yearly charges against age for all ${engine.formatInt(
                 calc.customers.length,
-              )} customers. Charges rise with age in three parallel bands: non-smokers lowest, smokers with a BMI under 30 in the middle, smokers with a BMI of 30 or more highest. The line shows the model's estimate for the customer in the calculator at every age, with the range where 8 in 10 such customers land.`}
+              )} customers. Charges rise with age in three parallel bands: non-smokers lowest, smokers with a BMI under 30 in the middle, smokers with a BMI of 30 or more highest. The line shows the typical charge for the customer in the calculator at every age, with the range where 8 in 10 such customers land.`}
               onMouseLeave={() => setHover(null)}
             >
               {niceTicks(0, maxY, 6).map((v) => (
@@ -228,18 +218,18 @@ export function Bands({ calc, engine, profile, onProfile }: Props) {
                 {hc.profile.children} {hc.profile.children === 1 ? "child" : "children"},{" "}
                 {capitalize(calc.regions[hc.profile.region] ?? "")}
               </p>
-              <p className="tabular mt-0.5 text-ink-2">
-                Model expects {engine.formatUsd(calc.model.predict(hc.profile))}
-              </p>
               <p className="mt-1 text-xs text-ink-3">Click to load into the calculator</p>
             </div>
           )}
         </div>
         <figcaption className="mt-3 max-w-3xl text-sm text-ink-2">
-          Each dot is a customer. The line is the calculator's customer at every age, with the
-          shaded range where 8 in 10 such customers land; dots far above it are the minority whose
-          charges no input in the data explains.
+          v1 drew one line for smokers and one for everyone else. The data has three bands: smokers
+          with a BMI of 30 or more pay about twice as much as other smokers.
         </figcaption>
+        <p className="mt-2 max-w-3xl text-xs text-ink-3">
+          Each dot is a customer; hover for details and click to load them into the calculator. The
+          line and shaded band are the calculator's customer at every age.
+        </p>
       </figure>
     </section>
   );
