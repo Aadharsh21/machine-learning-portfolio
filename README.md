@@ -54,3 +54,7 @@ The old URL keeps working, so the live site never breaks mid-update.
 - Fraud: Credit Card Fraud Detection (Kaggle), Worldline and the ULB Machine Learning Group.
 - Insurance: Medical Cost Personal Datasets (Kaggle).
 - Iris: R. A. Fisher (1936), as bundled with scikit-learn.
+
+## License
+
+MIT. See [LICENSE](LICENSE).
